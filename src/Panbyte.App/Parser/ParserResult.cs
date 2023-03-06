@@ -4,7 +4,8 @@ namespace Panbyte.App.Parser;
 
 public record ParserResult(bool Success, string ErrorMessage = "")
 {
-    public IReadOnlyDictionary<ArgumentType, List<string>> Arguments { get; } = new Dictionary<ArgumentType, List<string>>();
+    public IReadOnlyDictionary<ArgumentType, List<string>> Arguments { get; }
+        = new Dictionary<ArgumentType, List<string>>();
 
     public ParserResult(IReadOnlyDictionary<ArgumentType, List<string>> arguments) : this(true)
     {
@@ -27,20 +28,18 @@ public record ParserResult(bool Success, string ErrorMessage = "")
 
         Arguments.TryGetValue(ArgumentType.To, out tmp);
         var toArg = tmp?.FirstOrDefault()!;
-        return fromArg switch
-        {
-            "bytes" => ConvertorFactory.CreateBytesToConvertor(toArg),
-            _ => throw new NotImplementedException(),
-        };
-    }
-}
 
-public static class ConvertorFactory
-{
-    public static IConvertor CreateBytesToConvertor(string to) => to switch
-    {
-        "bits" => new BytesToBitsConvertor(),
-        "hex" => new CommonToTargetConvertor(new BytesToBitsConvertor(), new BitsToHexConvertor()),
-        _ => throw new NotImplementedException(),
-    };
+        Arguments.TryGetValue(ArgumentType.Delimeter, out var delimeter);
+        var delArg = delimeter?.FirstOrDefault() ?? "\n";
+
+        Arguments.TryGetValue(ArgumentType.FromOptions, out var fromOptions);
+        Arguments.TryGetValue(ArgumentType.ToOptions, out var toOptions);
+
+        var convertorOptions = new ConvertorOptions(
+            fromOptions is null ? Array.Empty<string>() : fromOptions,
+            toOptions is null ? Array.Empty<string>() : toOptions,
+            delArg);
+
+        return ConvertorFactory.CreateConvertor(fromArg, toArg, convertorOptions);
+    }
 }
