@@ -21,4 +21,14 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Panbyte.App\Panbyte.App.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+  	<None Update="TestData\test.txt">
+  		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  	</None>
+  </ItemGroup>
+
 </Project>
