@@ -1,13 +1,17 @@
 ﻿namespace Panbyte.App.Convertors;
 
-public class BitsToIntConvertor : IConvertor
+public class BitsToIntConvertor : Convertor
 {
-    public Stream Convert(Stream source)
+    public BitsToIntConvertor(ConvertorOptions convertorOptions) : base(convertorOptions)
+    {
+    }
+
+    public override Stream ConvertPart(Stream source)
     {
         throw new NotImplementedException();
     }
 
-    public bool ValidateOptions(out string errorMessage)
+    public override bool ValidateOptions(out string errorMessage)
     {
         throw new NotImplementedException();
     }

@@ -3,4 +3,4 @@
 public record ConvertorOptions(
     ICollection<string> FromOptions,
     ICollection<string> ToOptions,
-    string Delimeter);
+    string Delimiter);

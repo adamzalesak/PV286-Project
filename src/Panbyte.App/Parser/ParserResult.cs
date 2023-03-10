@@ -29,8 +29,8 @@ public record ParserResult(bool Success, string ErrorMessage = "")
         Arguments.TryGetValue(ArgumentType.To, out tmp);
         var toArg = tmp?.FirstOrDefault()!;
 
-        Arguments.TryGetValue(ArgumentType.Delimeter, out var delimeter);
-        var delArg = delimeter?.FirstOrDefault() ?? "\n";
+        Arguments.TryGetValue(ArgumentType.Delimiter, out var delimiter);
+        var delArg = delimiter?.FirstOrDefault() ?? Environment.NewLine;
 
         Arguments.TryGetValue(ArgumentType.FromOptions, out var fromOptions);
         Arguments.TryGetValue(ArgumentType.ToOptions, out var toOptions);

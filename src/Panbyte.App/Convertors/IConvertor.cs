@@ -2,6 +2,7 @@
 
 public interface IConvertor
 {
-    Stream Convert(Stream source);
+    Stream Convert(Stream stream);
+    Stream ConvertPart(Stream source);
     bool ValidateOptions(out string errorMessage);
 }
