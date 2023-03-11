@@ -4,11 +4,6 @@ public class StreamService : IStreamService
 {
     public bool Exists(string path)
     {
-        if (path == "stdin" || path == "stdout")
-        {
-            return true;
-        }
-
         throw new NotImplementedException();
     }
 
