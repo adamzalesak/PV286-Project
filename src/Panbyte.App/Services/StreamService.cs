@@ -12,9 +12,9 @@ public class StreamService : IStreamService
         throw new NotImplementedException();
     }
 
-    public Stream Open(string path)
+    public Stream Open(string? path)
     {
-        if (path == "stdin")
+        if (path is null)
         {
             return Console.OpenStandardInput();
         }
@@ -23,9 +23,9 @@ public class StreamService : IStreamService
     }
 
 
-    public void Save(string path, Stream stream)
+    public void Save(string? path, Stream stream)
     {
-        if (path == "stdout")
+        if (path is null)
         {
             var stdout = Console.OpenStandardOutput();
             using var writer = new StreamWriter(stdout);

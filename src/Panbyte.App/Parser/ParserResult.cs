@@ -14,11 +14,11 @@ public record ParserResult(bool Success, string ErrorMessage = "")
 
     public ParserResult(string errorMessage) : this(false, errorMessage) { }
 
-    public (string Input, string Output) GetInputOutput()
+    public (string? Input, string? Output) GetInputOutput()
     {
         Arguments.TryGetValue(ArgumentType.Input, out var input);
         Arguments.TryGetValue(ArgumentType.Output, out var output);
-        return (input?.FirstOrDefault() ?? "", output?.FirstOrDefault() ?? "");
+        return (input?.FirstOrDefault(), output?.FirstOrDefault());
     }
 
     public IConvertor CreateConvertorFromArguments()
