@@ -13,7 +13,7 @@ public class ArgumentParser
         { "-f", ArgumentType.From},
         { "-i", ArgumentType.Input},
         { "-o", ArgumentType.Output},
-        { "-d", ArgumentType.Delimeter},
+        { "-d", ArgumentType.Delimiter},
     };
     private readonly static Dictionary<string, ArgumentType> ArgumentNames = new()
     {
@@ -23,11 +23,11 @@ public class ArgumentParser
         { "from-options", ArgumentType.FromOptions},
         { "input", ArgumentType.Input},
         { "output", ArgumentType.Output},
-        { "delimeter", ArgumentType.Delimeter},
+        { "delimiter", ArgumentType.Delimiter},
     };
 
     private static readonly Regex longArgumentRegex = new(
-        @"^--(?<name>input|output|from|from-options|to|to-options|delimeter)=(?<value>.*)$",
+        @"^--(?<name>input|output|from|from-options|to|to-options|delimiter)=(?<value>.*)$",
         RegexOptions.Compiled,
         TimeSpan.FromMilliseconds(250));
 

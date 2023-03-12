@@ -30,13 +30,13 @@ if (!parserResult.Success)
 
 var (input, output) = parserResult.GetInputOutput();
 
-if (!streamService.Exists(input))
+if (input is not null && !streamService.Exists(input))
 {
     Console.WriteLine($"Input file '{input}' was not found");
     Environment.Exit(-3);
 }
 
-if (!streamService.Exists(output))
+if (output is not null && !streamService.Exists(output))
 {
     Console.WriteLine($"Output file '{output}' was not found");
     Environment.Exit(-3);

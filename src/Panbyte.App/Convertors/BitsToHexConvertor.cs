@@ -1,13 +1,16 @@
 ﻿namespace Panbyte.App.Convertors;
 
-public class BitsToHexConvertor : IConvertor
+public class BitsToHexConvertor : Convertor
 {
-    public Stream Convert(Stream source)
+    public BitsToHexConvertor(ConvertorOptions convertorOptions) : base(convertorOptions)
+    {
+    }
+    public override Stream ConvertPart(byte[] source)
     {
         throw new NotImplementedException();
     }
 
-    public bool ValidateOptions(out string errorMessage)
+    public override bool ValidateOptions(out string errorMessage)
     {
         throw new NotImplementedException();
     }

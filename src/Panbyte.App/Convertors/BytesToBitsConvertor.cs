@@ -1,20 +1,36 @@
 ﻿namespace Panbyte.App.Convertors;
 
-public class BytesToBitsConvertor : IConvertor
+public class BytesToBitsConvertor : Convertor
 {
-    private readonly char _delimeter;
-
-    public BytesToBitsConvertor(char delimeter = '\n')
+    public BytesToBitsConvertor(ConvertorOptions convertorOptions) : base(convertorOptions)
     {
-        _delimeter = delimeter;
     }
 
-    public Stream Convert(Stream source)
+    public override Stream ConvertPart(byte[] source)
     {
-        throw new NotImplementedException();
+        var bits = new List<bool>();
+        foreach (var b in source)
+        {
+            var byteValue = b;
+            for (var j = 0; j < 8; j++)
+            {
+                bits.Add((byteValue & 0x80) != 0);
+                byteValue <<= 1;
+            }
+        }
+
+        var stream = new MemoryStream();
+        foreach (var bitChar in bits.Select(b => b ? '1' : '0'))
+        {
+            stream.WriteByte((byte)bitChar);
+        }
+
+        stream.Flush();
+        stream.Position = 0;
+        return stream;
     }
 
-    public bool ValidateOptions(out string errorMessage)
+    public override bool ValidateOptions(out string errorMessage)
     {
         errorMessage = string.Empty;
         return true;
