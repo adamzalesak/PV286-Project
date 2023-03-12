@@ -12,7 +12,7 @@ public class CommonToTargetConvertor : Convertor
         _targetFormatConvertor = targetFormatConvertor;
     }
 
-    public override Stream ConvertPart(Stream source)
+    public override Stream ConvertPart(byte[] source)
     {
         throw new NotImplementedException();
     }

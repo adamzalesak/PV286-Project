@@ -3,6 +3,6 @@
 public interface IConvertor
 {
     Stream Convert(Stream stream);
-    Stream ConvertPart(Stream source);
+    Stream ConvertPart(byte[] source);
     bool ValidateOptions(out string errorMessage);
 }

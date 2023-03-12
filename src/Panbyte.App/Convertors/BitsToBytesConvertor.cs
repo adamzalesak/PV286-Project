@@ -6,7 +6,7 @@ public class BitsToBytesConvertor : Convertor
     {
     }
 
-    public override Stream ConvertPart(Stream source)
+    public override Stream ConvertPart(byte[] source)
     {
         throw new NotImplementedException();
     }

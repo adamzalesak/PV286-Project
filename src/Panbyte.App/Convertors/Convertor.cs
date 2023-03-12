@@ -11,7 +11,7 @@ public abstract class Convertor : IConvertor
         _convertorOptions = convertorOptions;
     }
 
-    public abstract Stream ConvertPart(Stream source);
+    public abstract Stream ConvertPart(byte[] source);
     public abstract bool ValidateOptions(out string errorMessage);
 
     public Stream Convert(Stream stream)
@@ -24,8 +24,8 @@ public abstract class Convertor : IConvertor
         var parts = content.Split(_convertorOptions.Delimiter);
         for (var i = 0; i < parts.Length; i++)
         {
-            var partStream = new MemoryStream(Encoding.UTF8.GetBytes(parts[i]));
-            var convertedPartStream = ConvertPart(partStream);
+            var part = Encoding.UTF8.GetBytes(parts[i]);
+            var convertedPartStream = ConvertPart(part);
             var convertedPart = new StreamReader(convertedPartStream).ReadToEnd();
             sb.Append(convertedPart);
             if (i != parts.Length - 1)

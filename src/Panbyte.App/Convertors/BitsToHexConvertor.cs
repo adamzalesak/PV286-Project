@@ -5,7 +5,7 @@ public class BitsToHexConvertor : Convertor
     public BitsToHexConvertor(ConvertorOptions convertorOptions) : base(convertorOptions)
     {
     }
-    public override Stream ConvertPart(Stream source)
+    public override Stream ConvertPart(byte[] source)
     {
         throw new NotImplementedException();
     }

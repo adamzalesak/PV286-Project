@@ -6,14 +6,13 @@ public class BytesToBitsConvertor : Convertor
     {
     }
 
-    public override Stream ConvertPart(Stream source)
+    public override Stream ConvertPart(byte[] source)
     {
         var bits = new List<bool>();
-        var buffer = new byte[1];
-        while (source.Read(buffer, 0, buffer.Length) > 0)
+        foreach (var b in source)
         {
-            var byteValue = buffer[0];
-            for (var i = 0; i < 8; i++)
+            var byteValue = b;
+            for (var j = 0; j < 8; j++)
             {
                 bits.Add((byteValue & 0x80) != 0);
                 byteValue <<= 1;
@@ -21,9 +20,8 @@ public class BytesToBitsConvertor : Convertor
         }
 
         var stream = new MemoryStream();
-        foreach (var b in bits)
+        foreach (var bitChar in bits.Select(b => b ? '1' : '0'))
         {
-            var bitChar = b ? '1' : '0';
             stream.WriteByte((byte)bitChar);
         }
 
