@@ -34,12 +34,12 @@ public class PanbyteIntegrationTests
 
     private static string GetAppExePath()
     {
-        var releaseExePath = "../../../../../src/Panbyte.App/bin/Release/net7.0/Panbyte.App.exe";
+        var releaseExePath = "../../../../../src/Panbyte.App/bin/Release/net7.0/panbyte.exe";
         if (!File.Exists(releaseExePath))
         {
-            return "../../../../../src/Panbyte.App/bin/Debug/net7.0/Panbyte.App.exe";
+            releaseExePath = "../../../../../src/Panbyte.App/bin/Debug/net7.0/panbyte.exe";
         }
-        return releaseExePath;
+        return Environment.GetEnvironmentVariable("ACTIONS_APP_PATH") ?? releaseExePath;
     }
     //todo TestsWithFiles
 }
