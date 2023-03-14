@@ -6,7 +6,7 @@ public class BytesToBitsConvertor : Convertor
     {
     }
 
-    public override Stream ConvertPart(byte[] source)
+    public override void ConvertPart(byte[] source, Stream destination)
     {
         var bits = new List<bool>();
         foreach (var b in source)
@@ -19,15 +19,10 @@ public class BytesToBitsConvertor : Convertor
             }
         }
 
-        var stream = new MemoryStream();
         foreach (var bitChar in bits.Select(b => b ? '1' : '0'))
         {
-            stream.WriteByte((byte)bitChar);
+            destination.WriteByte((byte)bitChar);
         }
-
-        stream.Flush();
-        stream.Position = 0;
-        return stream;
     }
 
     public override bool ValidateOptions(out string errorMessage)

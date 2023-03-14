@@ -16,7 +16,7 @@ public class StreamServiceTests
     [Fact]
     public void Open_WhenFileExists_ReturnsStream()
     {
-        using var reader = new StreamReader(streamService.Open("TestData/test.txt"));
+        using var reader = new StreamReader(streamService.OpenInputStream("TestData/test.txt"));
         var text = reader.ReadToEnd();
         Assert.StartsWith("test", text);
     }

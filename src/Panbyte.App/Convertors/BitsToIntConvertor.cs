@@ -6,7 +6,7 @@ public class BitsToIntConvertor : Convertor
     {
     }
 
-    public override Stream ConvertPart(byte[] source)
+    public override void ConvertPart(byte[] source, Stream destination)
     {
         throw new NotImplementedException();
     }

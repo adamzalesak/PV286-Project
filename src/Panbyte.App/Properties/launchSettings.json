@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Panbyte.App": {
+      "commandName": "Project",
+      "commandLineArgs": "-h"
+    }
+  }
+}
