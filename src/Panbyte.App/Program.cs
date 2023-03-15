@@ -57,5 +57,22 @@ streamService.Save(output, outputStream);
 
 static void PrintHelp()
 {
-    Console.WriteLine("help");
+    Console.Write(
+        "./panbyte [ARGS...]\n\n" +
+        "ARGS:\n" +
+        "-f FORMAT     --from=FORMAT           Set input data format\n" +
+        "              --from-options=OPTIONS  Set input options\n" +
+        "-t FORMAT     --to=FORMAT             Set output data format\n" +
+        "              --to-options=OPTIONS    Set output options\n" +
+        "-i FILE       --input=FILE            Set input file (default stdin)\n" +
+        "-o FILE       --output=FILE           Set output file (default stdout)\n" +
+        "-d DELIMITER  --delimiter=DELIMITER   Record delimiter (default newline)\n" +
+        "-h            --help                  Print help\n\n" +
+        "FORMATS:\n" +
+        "bytes         Raw bytes\n" +
+        "hex           Hex-encoded string\n" +
+        "int           Integer\n" +
+        "bits          0,1-represented bits\n" +
+        "array         Byte array\n"
+    );
 }
