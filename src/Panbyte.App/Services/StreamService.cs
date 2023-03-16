@@ -4,34 +4,33 @@ public class StreamService : IStreamService
 {
     public bool Exists(string path)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(path))
+        {
+            return true;
+        }
+        return File.Exists(path);
     }
 
-    public Stream Open(string? path)
+    public Stream OpenInputStream(string? path)
     {
-        if (path is null)
+        if (string.IsNullOrEmpty(path))
         {
             return Console.OpenStandardInput();
         }
-
-        throw new NotImplementedException();
+        return File.Open(path, FileMode.Open, FileAccess.Read, FileShare.None);
     }
 
-
-    public void Save(string? path, Stream stream)
+    public Stream OpenOutputStream(string? path)
     {
-        if (path is null)
+        if (string.IsNullOrEmpty(path))
         {
-            var stdout = Console.OpenStandardOutput();
-            using var writer = new StreamWriter(stdout);
-            stream.Position = 0;
-            using var reader = new StreamReader(stream);
-            writer.Write(reader.ReadToEnd());
-            writer.Flush();
-
-            return;
+            return Console.OpenStandardOutput();
         }
+        return File.Open(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+    }
 
-        throw new NotImplementedException();
+    public void Save(Stream stream)
+    {
+        stream.Flush();
     }
 }

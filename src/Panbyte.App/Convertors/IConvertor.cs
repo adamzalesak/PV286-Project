@@ -2,7 +2,8 @@
 
 public interface IConvertor
 {
-    Stream Convert(Stream stream);
-    Stream ConvertPart(byte[] source);
+    void Convert(Stream source, Stream destination);
+    void ConvertPart(byte[] source, Stream destination);
     bool ValidateOptions(out string errorMessage);
+    bool ValidateByte(byte b);
 }

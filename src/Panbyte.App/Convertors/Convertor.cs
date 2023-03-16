@@ -4,36 +4,81 @@ namespace Panbyte.App.Convertors;
 
 public abstract class Convertor : IConvertor
 {
-    private readonly ConvertorOptions _convertorOptions;
+    protected readonly ConvertorOptions _convertorOptions;
+    private const int _bufferSize = 4096;
+    private readonly byte[] _rawBytesDelimeter;
 
     protected Convertor(ConvertorOptions convertorOptions)
     {
         _convertorOptions = convertorOptions;
+        _rawBytesDelimeter = Encoding.UTF8.GetBytes(_convertorOptions.Delimiter);
     }
 
-    public abstract Stream ConvertPart(byte[] source);
+    public abstract void ConvertPart(byte[] source, Stream destination);
     public abstract bool ValidateOptions(out string errorMessage);
+    public virtual bool ValidateByte(byte b) => true;
+    public virtual bool IsDelimeterEntered() => false; // todo zatim nepodporovat _rawBytesDelimeter.Any();
 
-    public Stream Convert(Stream stream)
+    public void Convert(Stream source, Stream destination)
     {
-        // separate the stream into parts by the _convertorOptions.Delimiter and convert each part by ConvertPart method. Add the delimiter to the end of each part.
-        var sb = new StringBuilder();
-        using var sr = new StreamReader(stream);
-        
-        var content = sr.ReadToEnd();
-        var parts = content.Split(_convertorOptions.Delimiter);
-        for (var i = 0; i < parts.Length; i++)
+        var bytes = new List<byte>();
+        int readByte;
+
+        while ((readByte = source.ReadByte()) != -1)
         {
-            var part = Encoding.UTF8.GetBytes(parts[i]);
-            var convertedPartStream = ConvertPart(part);
-            var convertedPart = new StreamReader(convertedPartStream).ReadToEnd();
-            sb.Append(convertedPart);
-            if (i != parts.Length - 1)
+            var byteValue = (byte)readByte;
+
+            if (!ValidateByte(byteValue))
             {
-                sb.Append(_convertorOptions.Delimiter);
+                throw new ArgumentOutOfRangeException(nameof(source));
+            }
+
+            if (IsDelimeterEntered() && byteValue == _rawBytesDelimeter.First())
+            {
+                var startPos = source.Position;
+                if (!TryReadDelimeter(source))
+                {
+                    bytes.Add(byteValue);
+                    source.Seek(startPos, SeekOrigin.Begin);
+                    continue;
+                }
+
+                ConvertInternal(bytes, destination);
+                destination.Write(_rawBytesDelimeter);
+                continue;
+            }
+            bytes.Add(byteValue);
+
+            if (bytes.Count >= _bufferSize)
+            {
+                ConvertInternal(bytes, destination);
             }
         }
 
-        return new MemoryStream(Encoding.UTF8.GetBytes(sb.ToString()));
+        if (readByte == -1 && bytes.Count != 0)
+        {
+            ConvertInternal(bytes, destination);
+        }
+    }
+
+    private void ConvertInternal(IList<byte> bytes, Stream destination)
+    {
+        ConvertPart(bytes.ToArray(), destination);
+        bytes.Clear();
+    }
+
+    private bool TryReadDelimeter(Stream source)
+    {
+        source.Seek(source.Position == 0 ? 0 : -1, SeekOrigin.Current);
+        var delimeter = new byte[_rawBytesDelimeter.Length];
+        try
+        {
+            source.ReadExactly(delimeter, 0, _rawBytesDelimeter.Length);
+        }
+        catch
+        {
+            return false;
+        }
+        return _rawBytesDelimeter.SequenceEqual(delimeter);
     }
 }

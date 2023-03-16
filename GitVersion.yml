@@ -1,0 +1,15 @@
+mode: ContinuousDeployment
+branches:
+  develop:
+    tag: alpha
+  release:
+    tag: beta
+  hotfix:
+    tag: hotfix-{BranchName}
+  master:
+    increment: Minor
+    prevent-increment-of-merged-branch-version: true
+  feature:
+    tag: feat-{BranchName}
+ignore:
+  sha: []
