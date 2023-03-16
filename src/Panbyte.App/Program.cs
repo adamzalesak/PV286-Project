@@ -11,35 +11,34 @@ try
 catch (Exception ex)
 {
     Console.WriteLine(ex.Message);
-    Environment.Exit(1);
-    return;
+    return -1;
 }
 
 if (parser.IsHelpOptionProvided())
 {
     PrintHelp();
-    Environment.Exit(0);
+    return 1;
 }
 
 var parserResult = parser.Parse();
 if (!parserResult.Success)
 {
     Console.WriteLine(parserResult.ErrorMessage);
-    Environment.Exit(-2);
+    return -2;
 }
 
 var (input, output) = parserResult.GetInputOutput();
 
-if (input is not null && !streamService.Exists(input))
+if (!streamService.Exists(input))
 {
     Console.WriteLine($"Input file '{input}' was not found");
-    Environment.Exit(-3);
+    return -3;
 }
 
-if (output is not null && !streamService.Exists(output))
+if (!streamService.Exists(output))
 {
     Console.WriteLine($"Output file '{output}' was not found");
-    Environment.Exit(-3);
+    return -3;
 }
 
 var convertor = parserResult.CreateConvertorFromArguments();
@@ -47,13 +46,24 @@ var convertor = parserResult.CreateConvertorFromArguments();
 if (!convertor.ValidateOptions(out var optionsError))
 {
     Console.WriteLine(optionsError);
-    Environment.Exit(-4);
+    return -4;
 }
 
-using var sourceStream = streamService.Open(input);
-using var outputStream = convertor.Convert(sourceStream);
-streamService.Save(output, outputStream);
+try
+{
+    using var sourceStream = streamService.OpenInputStream(input);
+    using var outputStream = streamService.OpenOutputStream(output);
+    convertor.Convert(sourceStream, outputStream);
+    streamService.Save(outputStream);
+}
+//todo catch custom exception
+catch
+{
+    Console.WriteLine("Unknown error");
+    return -5;
+}
 
+return 0;
 
 static void PrintHelp()
 {

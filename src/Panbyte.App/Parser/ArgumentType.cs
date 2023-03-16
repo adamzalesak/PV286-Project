@@ -21,7 +21,7 @@ public static class ArgumentTypeExtensions
             ArgumentType.ToOptions =>
                  value == "big" || value == "little" || value == "0x" || value == "0" || value == "a" || value == "0b" || value == "{}", //todo
             ArgumentType.Input or ArgumentType.Output => true,
-            ArgumentType.Delimiter => value.Length == 1,
+            ArgumentType.Delimiter => true,
             _ => throw new NotImplementedException(),
         };
 }
