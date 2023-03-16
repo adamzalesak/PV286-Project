@@ -26,7 +26,7 @@ public class StreamService : IStreamService
         {
             return Console.OpenStandardOutput();
         }
-        return File.Open(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+        return File.Open(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
     }
 
     public void Save(Stream stream)

@@ -2,7 +2,7 @@
   "profiles": {
     "Panbyte.App": {
       "commandName": "Project",
-      "commandLineArgs": "-h"
+      "commandLineArgs": "-f bytes -t bits --input=C:\\Users\\filip.hajek\\Desktop\\test.txt --output=C:\\Users\\filip.hajek\\Desktop\\result.txt -d abcd"
     }
   }
 }
