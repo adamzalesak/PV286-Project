@@ -12,7 +12,7 @@ public class HexToBytesConvertor : Convertor
     {
         var sourceString = System.Text.Encoding.ASCII.GetString(source);
         // remove all whitespaces
-        Regex.Replace(sourceString, @"\s+", "");
+        sourceString = Regex.Replace(sourceString, @"\s+", "");
         byte oneByte;
 
         if (sourceString.Length % 2 != 0)
@@ -20,7 +20,7 @@ public class HexToBytesConvertor : Convertor
             throw new ArgumentException("Invalid input value");
         }
 
-        for (int i = 0; i < source.Length; i += 2)
+        for (int i = 0; i < sourceString.Length; i += 2)
         {
             oneByte = System.Convert.ToByte(sourceString.Substring(i, 2), 16);
             destination.WriteByte(oneByte);
