@@ -12,6 +12,8 @@ public class PanbyteIntegrationTests
     [InlineData("-h", "", "", 1)]
     [InlineData("--help", "", "", 1)]
     [InlineData("-f bytes --to=bits", "test", "01110100011001010111001101110100", 0)]
+    [InlineData("-f hex -t bytes", "74657374", "test", 0)]
+    [InlineData("-f hex -t bytes", "74 65 73 74", "test", 0)]
     public async Task TestsWithPipes(string arguments, string input, string output, int errCode)
     {
         using var outputStream = new MemoryStream();

@@ -1,4 +1,6 @@
-﻿namespace Panbyte.App.Convertors;
+﻿using System.Text.RegularExpressions;
+
+namespace Panbyte.App.Convertors;
 
 public class HexToBytesConvertor : Convertor
 {
@@ -9,9 +11,11 @@ public class HexToBytesConvertor : Convertor
     public override void ConvertPart(byte[] source, Stream destination)
     {
         var sourceString = System.Text.Encoding.ASCII.GetString(source);
+        // remove all whitespaces
+        Regex.Replace(sourceString, @"\s+", "");
         byte oneByte;
 
-        if (destination.Length % 2 != 0)
+        if (sourceString.Length % 2 != 0)
         {
             throw new ArgumentException("Invalid input value");
         }
