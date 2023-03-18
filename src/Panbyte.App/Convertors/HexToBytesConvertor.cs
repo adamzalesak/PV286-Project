@@ -1,10 +1,11 @@
-﻿using System.Text.RegularExpressions;
+﻿using Panbyte.App.Validators;
+using System.Text.RegularExpressions;
 
 namespace Panbyte.App.Convertors;
 
 public class HexToBytesConvertor : Convertor
 {
-    public HexToBytesConvertor(ConvertorOptions convertorOptions) : base(convertorOptions)
+    public HexToBytesConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions, byteValidator)
     {
     }
 

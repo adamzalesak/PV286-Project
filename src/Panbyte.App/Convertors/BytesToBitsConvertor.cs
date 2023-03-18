@@ -1,8 +1,10 @@
-﻿namespace Panbyte.App.Convertors;
+﻿using Panbyte.App.Validators;
+
+namespace Panbyte.App.Convertors;
 
 public class BytesToBitsConvertor : Convertor
 {
-    public BytesToBitsConvertor(ConvertorOptions convertorOptions) : base(convertorOptions)
+    public BytesToBitsConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions, byteValidator)
     {
     }
 

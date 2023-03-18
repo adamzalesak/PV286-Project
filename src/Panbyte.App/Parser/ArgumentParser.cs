@@ -91,14 +91,23 @@ public class ArgumentParser
             }
         }
 
+        //todo ArgumentValueValidator class?
         if (!_arguments.ContainsKey(ArgumentType.To))
         {
             return new("Missing 'to' argument");
         }
-
         if (!_arguments.ContainsKey(ArgumentType.From))
         {
             return new("Missing 'from' argument");
+        }
+
+        if (_arguments.TryGetValue(ArgumentType.Input, out var input) && input.First().IsStdinOrStdout())
+        {
+            return new($"'{input}' is invalid value for 'input' argument");
+        }
+        if (_arguments.TryGetValue(ArgumentType.Input, out var output) && output.First().IsStdinOrStdout())
+        {
+            return new($"'{output}' is invalid value for 'output' argument");
         }
 
         return new ParserResult(_arguments);

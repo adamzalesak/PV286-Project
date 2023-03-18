@@ -11,7 +11,7 @@ public class BytesToBitsTests
     public void Convert_WhenValidInput_ReturnsValidOutput(string input, string output)
     {
         var options = new ConvertorOptions(Array.Empty<string>(), Array.Empty<string>(), "f");
-        var convertor = new BytesToBitsConvertor(options);
+        var convertor = ConvertorFactory.CreateConvertor("bytes", "bits", options);
         using var stream = input.ToStream();
         using var memoryStream = new MemoryStream();
         convertor.Convert(stream, memoryStream);

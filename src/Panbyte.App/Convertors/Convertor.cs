@@ -1,3 +1,4 @@
+using Panbyte.App.Validators;
 using System.Text;
 
 namespace Panbyte.App.Convertors;
@@ -5,19 +6,20 @@ namespace Panbyte.App.Convertors;
 public abstract class Convertor : IConvertor
 {
     protected readonly ConvertorOptions _convertorOptions;
-    private const int _bufferSize = 4096;
+    private readonly IByteValidator _byteValidator;
+
+    protected virtual int _bufferSize { get; } = 4096;
     private readonly byte[] _rawBytesDelimeter;
 
-    protected Convertor(ConvertorOptions convertorOptions)
+    protected Convertor(ConvertorOptions convertorOptions, IByteValidator byteValidator)
     {
         _convertorOptions = convertorOptions;
+        _byteValidator = byteValidator;
         _rawBytesDelimeter = Encoding.UTF8.GetBytes(_convertorOptions.Delimiter);
     }
 
     public abstract void ConvertPart(byte[] source, Stream destination);
-    public abstract bool ValidateOptions(out string errorMessage);
-    public virtual bool ValidateByte(byte b) => true;
-    public virtual bool IsDelimeterEntered() => false; // todo zatim nepodporovat _rawBytesDelimeter.Any();
+    public virtual bool InputDelimeterEnabled() => false; // todo zatim nepodporovat _rawBytesDelimeter.Any();
 
     public void Convert(Stream source, Stream destination)
     {
@@ -28,12 +30,15 @@ public abstract class Convertor : IConvertor
         {
             var byteValue = (byte)readByte;
 
-            if (!ValidateByte(byteValue))
+            switch (_byteValidator.ValidateByte(byteValue))
             {
-                throw new ArgumentOutOfRangeException(nameof(source));
+                case ByteValidation.Ignore:
+                    continue;
+                case ByteValidation.Error:
+                    throw new ArgumentOutOfRangeException(nameof(source));
             }
 
-            if (IsDelimeterEntered() && byteValue == _rawBytesDelimeter.First())
+            if (InputDelimeterEnabled() && byteValue == _rawBytesDelimeter.First())
             {
                 var startPos = source.Position;
                 if (!TryReadDelimeter(source))
@@ -59,6 +64,12 @@ public abstract class Convertor : IConvertor
         {
             ConvertInternal(bytes, destination);
         }
+    }
+
+    public virtual bool ValidateOptions(out string errorMessage)
+    {
+        errorMessage = string.Empty;
+        return true;
     }
 
     private void ConvertInternal(IList<byte> bytes, Stream destination)

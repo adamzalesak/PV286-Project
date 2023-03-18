@@ -6,23 +6,27 @@ public class StreamService : IStreamService
     {
         if (string.IsNullOrEmpty(path))
         {
+            return false;
+        }
+        if (path.IsStdinOrStdout())
+        {
             return true;
         }
         return File.Exists(path);
     }
 
-    public Stream OpenInputStream(string? path)
+    public Stream OpenInputStream(string path)
     {
-        if (string.IsNullOrEmpty(path))
+        if (path == Constants.Stdin)
         {
             return Console.OpenStandardInput();
         }
         return File.Open(path, FileMode.Open, FileAccess.Read, FileShare.None);
     }
 
-    public Stream OpenOutputStream(string? path)
+    public Stream OpenOutputStream(string path)
     {
-        if (string.IsNullOrEmpty(path))
+        if (path == Constants.Stdout)
         {
             return Console.OpenStandardOutput();
         }

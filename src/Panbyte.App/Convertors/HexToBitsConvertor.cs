@@ -1,8 +1,10 @@
-﻿namespace Panbyte.App.Convertors;
+﻿using Panbyte.App.Validators;
+
+namespace Panbyte.App.Convertors;
 
 public class HexToBitsConvertor : Convertor
 {
-    public HexToBitsConvertor(ConvertorOptions convertorOptions) : base(convertorOptions)
+    public HexToBitsConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions, byteValidator)
     {
     }
 

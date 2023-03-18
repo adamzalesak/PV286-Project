@@ -18,7 +18,7 @@ public record ParserResult(bool Success, string ErrorMessage = "")
     {
         Arguments.TryGetValue(ArgumentType.Input, out var input);
         Arguments.TryGetValue(ArgumentType.Output, out var output);
-        return (input?.FirstOrDefault() ?? "", output?.FirstOrDefault() ?? "");
+        return (input?.FirstOrDefault() ?? Constants.Stdin, output?.FirstOrDefault() ?? Constants.Stdout);
     }
 
     public IConvertor CreateConvertorFromArguments()
