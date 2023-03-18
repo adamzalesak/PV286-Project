@@ -1,4 +1,5 @@
-﻿using Panbyte.App.Parser;
+﻿using Panbyte.App.Exceptions;
+using Panbyte.App.Parser;
 using Panbyte.App.Services;
 
 
@@ -53,11 +54,15 @@ try
         convertor.Convert(sourceStream, outputStream);
         streamService.Save(outputStream);
     }
-    //todo catch custom exception
+    catch (InvalidFormatCharacter ex)
+    {
+        Console.WriteLine($"{ex.Message}");
+        return -6;
+    }
     catch
     {
         Console.WriteLine("Unknown error");
-        return -5;
+        return -4;
     }
 
     return 0;

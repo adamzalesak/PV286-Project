@@ -1,3 +1,4 @@
+using Panbyte.App.Exceptions;
 using Panbyte.App.Validators;
 using System.Text;
 
@@ -44,7 +45,7 @@ public abstract class Convertor<TOptions> : IConvertor
                 case ByteValidation.Ignore:
                     continue;
                 case ByteValidation.Error:
-                    throw new ArgumentOutOfRangeException(nameof(source));
+                    throw new InvalidFormatCharacter();
             }
 
             if (InputDelimeterEnabled() && byteValue == _rawBytesDelimeter.First())
