@@ -42,7 +42,7 @@ public static class ConvertorFactory
 
     private static IConvertor CreateFromHexToXConvertor(string to, ConvertorOptions convertorOptions) => to switch
     {
-        "bytes" => new CommonToTargetConvertor(new HexToBitsConvertor(convertorOptions), new BitsToBytesConvertor(convertorOptions), convertorOptions),
+        "bytes" => new HexToBytesConvertor(convertorOptions),
         "int" => new CommonToTargetConvertor(new HexToBitsConvertor(convertorOptions), new BitsToIntConvertor(convertorOptions), convertorOptions),
         "bits" => new HexToBitsConvertor(convertorOptions),
         "array" => throw new NotImplementedException(),
