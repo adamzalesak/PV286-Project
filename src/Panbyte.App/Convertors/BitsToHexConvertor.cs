@@ -58,11 +58,6 @@ public class BitsToHexConvertor : Convertor
 
         foreach (var bit in source)
         {
-            if (bit != '0' && bit != '1')
-            {
-                throw new ArgumentException("Invalid input value");
-            }
-
             bits.Add(bit == '0' ? (byte)0 : (byte)1);
             if (bits.Count == 8)
             {
