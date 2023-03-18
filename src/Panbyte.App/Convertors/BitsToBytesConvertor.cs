@@ -1,6 +1,4 @@
-﻿using Panbyte.App.Validators;
-
-namespace Panbyte.App.Convertors;
+﻿namespace Panbyte.App.Convertors;
 
 public class BitsToBytesConvertor : Convertor
 {
@@ -22,7 +20,7 @@ public class BitsToBytesConvertor : Convertor
     public override void ConvertPart(byte[] source, Stream destination)
     {
         source = HandlePadding(source);
-        
+
         var sourceString = System.Text.Encoding.ASCII.GetString(source);
         var remainder = source.Length % 8;
         byte oneByte;

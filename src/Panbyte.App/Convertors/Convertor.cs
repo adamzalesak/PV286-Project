@@ -3,19 +3,28 @@ using System.Text;
 
 namespace Panbyte.App.Convertors;
 
-public abstract class Convertor : IConvertor
+public abstract class Convertor : Convertor<ConvertorOptions>
 {
-    protected readonly ConvertorOptions _convertorOptions;
+    protected Convertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions, byteValidator)
+    {
+    }
+}
+
+
+public abstract class Convertor<TOptions> : IConvertor
+    where TOptions : ConvertorOptions
+{
     private readonly IByteValidator _byteValidator;
 
-    protected virtual int _bufferSize { get; } = 4096;
+    protected virtual int BufferSize { get; } = 4096;
+    protected readonly ConvertorOptions _convertorOptions;
     private readonly byte[] _rawBytesDelimeter;
 
-    protected Convertor(ConvertorOptions convertorOptions, IByteValidator byteValidator)
+    protected Convertor(TOptions convertorOptions, IByteValidator byteValidator)
     {
         _convertorOptions = convertorOptions;
         _byteValidator = byteValidator;
-        _rawBytesDelimeter = Encoding.UTF8.GetBytes(_convertorOptions.Delimiter);
+        _rawBytesDelimeter = Encoding.UTF8.GetBytes(_convertorOptions.Delimeter);
     }
 
     public abstract void ConvertPart(byte[] source, Stream destination);
@@ -54,7 +63,7 @@ public abstract class Convertor : IConvertor
             }
             bytes.Add(byteValue);
 
-            if (bytes.Count >= _bufferSize)
+            if (bytes.Count >= BufferSize)
             {
                 ConvertInternal(bytes, destination);
             }
@@ -64,12 +73,6 @@ public abstract class Convertor : IConvertor
         {
             ConvertInternal(bytes, destination);
         }
-    }
-
-    public virtual bool ValidateOptions(out string errorMessage)
-    {
-        errorMessage = string.Empty;
-        return true;
     }
 
     private void ConvertInternal(IList<byte> bytes, Stream destination)

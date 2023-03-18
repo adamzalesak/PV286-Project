@@ -26,10 +26,4 @@ public class BytesToBitsConvertor : Convertor
             destination.WriteByte((byte)bitChar);
         }
     }
-
-    public override bool ValidateOptions(out string errorMessage)
-    {
-        errorMessage = string.Empty;
-        return true;
-    }
 }

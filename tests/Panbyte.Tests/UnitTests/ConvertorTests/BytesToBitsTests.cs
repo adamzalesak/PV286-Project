@@ -1,4 +1,5 @@
 ﻿using Panbyte.App.Convertors;
+using Panbyte.App.Validators;
 using Panbyte.Tests.Helpers;
 using Xunit;
 
@@ -10,8 +11,7 @@ public class BytesToBitsTests
     [InlineData("test", "01110100011001010111001101110100")]
     public void Convert_WhenValidInput_ReturnsValidOutput(string input, string output)
     {
-        var options = new ConvertorOptions(Array.Empty<string>(), Array.Empty<string>(), "f");
-        var convertor = ConvertorFactory.CreateConvertor("bytes", "bits", options);
+        var convertor = new BytesToBitsConvertor(new(""), new DefaultValidator());
         using var stream = input.ToStream();
         using var memoryStream = new MemoryStream();
         convertor.Convert(stream, memoryStream);

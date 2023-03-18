@@ -6,17 +6,10 @@ public class BitsToHexConvertor : Convertor
 {
     private readonly string _padding;
 
-    public BitsToHexConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions,
-        byteValidator)
+    public BitsToHexConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator)
+        : base(convertorOptions, byteValidator)
     {
-        if (_convertorOptions.FromOptions.Count > 1 ||
-            (_convertorOptions.FromOptions.Count == 1 && (_convertorOptions.FromOptions.First() != "left" &&
-                                                          _convertorOptions.FromOptions.First() != "right")))
-        {
-            throw new ArgumentException("Invalid from-options value");
-        }
-
-        _padding = _convertorOptions.FromOptions.FirstOrDefault() ?? "left";
+        _padding = _convertorOptions.InputOption;
     }
 
     public override void ConvertPart(byte[] source, Stream destination)

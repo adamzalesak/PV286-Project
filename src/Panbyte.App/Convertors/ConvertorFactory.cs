@@ -1,57 +1,41 @@
 ﻿using Panbyte.App.Convertors.Copy;
+using Panbyte.App.Parser;
 using Panbyte.App.Validators;
 
 namespace Panbyte.App.Convertors;
 
 public static class ConvertorFactory
 {
-    public static IConvertor CreateConvertor(string from, string to, ConvertorOptions convertorOptions)
-        => from switch
+    private static readonly Dictionary<(Format From, Format To), Func<string, ICollection<string>, ICollection<string>, IConvertor>> factory = new()
+    {
+        // bits to x
+        { (Format.Bits, Format.Bits), (del, inputs, _) => new CopyBitsConvertor(new ConvertorOptions(del, inputs.FirstOrDefault("left")), CreateByteValidator(Format.Bits))},
+        { (Format.Bits, Format.Bytes), (del, inputs, _) => new BitsToBytesConvertor(new ConvertorOptions(del, inputs.FirstOrDefault("left")), CreateByteValidator(Format.Bits))},
+        { (Format.Bits, Format.Hex), (del, inputs, _) => new BitsToHexConvertor(new ConvertorOptions(del, inputs.FirstOrDefault("left")), CreateByteValidator(Format.Bits))},
+        // bytes to x
+        { (Format.Bytes, Format.Bytes), (del, _, _) => new CopyBytesConvertor()},
+        { (Format.Bytes, Format.Hex), (del, _, _) => new BytesToHexConvertor(new ConvertorOptions(del), CreateByteValidator(Format.Bytes))},
+        { (Format.Bytes, Format.Bits), (del, _, _) => new BytesToBitsConvertor(new ConvertorOptions(del), CreateByteValidator(Format.Bytes))},
+        // hex to x
+        { (Format.Hex, Format.Hex), (del, _, _) => new CopyHexConvertor(new ConvertorOptions(del), CreateByteValidator(Format.Hex))},
+        { (Format.Hex, Format.Bytes), (del, _, _) => new HexToBytesConvertor(new ConvertorOptions(del), CreateByteValidator(Format.Hex))},
+        { (Format.Hex, Format.Bits), (del, _, _) => new HexToBitsConvertor(new ConvertorOptions(del), CreateByteValidator(Format.Hex))},
+    };
+
+    public static IConvertor Create(Format from, Format to, string del, ICollection<string> inputs, ICollection<string> outputs)
+    {
+        if (factory.TryGetValue((from, to), out var factoryMethod))
         {
-            "bytes" => CreateFromBytesToXConvertor(to, convertorOptions),
-            "hex" => CreateFromHexToXConvertor(to, convertorOptions),
-            "int" => CreateFromIntToXConvertor(to, convertorOptions),
-            "bits" => CreateFromBitsToXConvertor(to, convertorOptions),
-            _ => throw new NotImplementedException(), // todo unknown format or invalid format
-        };
+            return factoryMethod(del, inputs, outputs);
+        }
+        throw new NotImplementedException();
+    }
 
-    private static IConvertor CreateFromBytesToXConvertor(string to, ConvertorOptions convertorOptions) => to switch
+    private static IByteValidator CreateByteValidator(Format from) => from switch
     {
-        "bits" => new BytesToBitsConvertor(convertorOptions, CreateByteValidator("bytes")),
-        "hex" => new BytesToHexConvertor(convertorOptions, CreateByteValidator("bytes")),
-        "bytes" => new CopyBytesConvertor(),
-        _ => throw new NotImplementedException(),
-    };
-
-    private static IConvertor CreateFromBitsToXConvertor(string to, ConvertorOptions convertorOptions) => to switch
-    {
-        "bytes" => new BitsToBytesConvertor(convertorOptions, CreateByteValidator("bits")),
-        "hex" => new BitsToHexConvertor(convertorOptions, CreateByteValidator("bits")),
-        "bits" => new CopyBitsConvertor(convertorOptions, CreateByteValidator("bits")),
-        _ => throw new NotImplementedException(),
-    };
-
-    private static IConvertor CreateFromIntToXConvertor(string to, ConvertorOptions convertorOptions) => to switch
-    {
-        _ => throw new NotImplementedException(),
-    };
-
-    private static IConvertor CreateFromHexToXConvertor(string to, ConvertorOptions convertorOptions) => to switch
-    {
-        "bytes" => new HexToBytesConvertor(convertorOptions, CreateByteValidator("hex")),
-        "bits" => new HexToBitsConvertor(convertorOptions, CreateByteValidator("bits")),
-        "hex" => new CopyHexConvertor(convertorOptions, CreateByteValidator("hex")),
-        _ => throw new NotImplementedException(),
-    };
-
-    private static IConvertor CreateFromArrayToXConvertor(string to)
-        => throw new NotImplementedException();
-
-    private static IByteValidator CreateByteValidator(string from) => from switch
-    {
-        "bits" => new BitsValidator(),
-        "hex" => new HexValidator(),
-        "int" => new IntValidator(),
+        Format.Bits => new BitsValidator(),
+        Format.Hex => new HexValidator(),
+        Format.Int => new IntValidator(),
         _ => new DefaultValidator()
     };
 }
