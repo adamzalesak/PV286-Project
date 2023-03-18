@@ -4,12 +4,25 @@ namespace Panbyte.App.Convertors;
 
 public class BitsToBytesConvertor : Convertor
 {
-    public BitsToBytesConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions, byteValidator)
+    private readonly string _padding;
+
+    public BitsToBytesConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(
+        convertorOptions, byteValidator)
     {
+        if (_convertorOptions.FromOptions.Count > 1 ||
+            (_convertorOptions.FromOptions.Count == 1 && (_convertorOptions.FromOptions.First() != "left" &&
+                                                          _convertorOptions.FromOptions.First() != "right")))
+        {
+            throw new ArgumentException("Invalid from-options value");
+        }
+
+        _padding = _convertorOptions.FromOptions.FirstOrDefault() ?? "left";
     }
 
     public override void ConvertPart(byte[] source, Stream destination)
     {
+        source = HandlePadding(source);
+        
         var sourceString = System.Text.Encoding.ASCII.GetString(source);
         var remainder = source.Length % 8;
         byte oneByte;
@@ -29,8 +42,22 @@ public class BitsToBytesConvertor : Convertor
         destination.Flush();
     }
 
-    public override bool ValidateOptions(out string errorMessage)
+
+    private byte[] HandlePadding(byte[] source)
     {
-        throw new NotImplementedException();
+        if (source.Length % 8 != 0 && _padding == "left")
+        {
+            var padding = new byte[8 - (source.Length % 8)];
+            padding = padding.Select(_ => (byte)'0').ToArray();
+            source = padding.Concat(source).ToArray();
+        }
+        else if (source.Length % 8 != 0 && _padding == "right")
+        {
+            var padding = new byte[8 - (source.Length % 8)];
+            padding = padding.Select(_ => (byte)'0').ToArray();
+            source = source.Concat(padding).ToArray();
+        }
+
+        return source;
     }
 }
