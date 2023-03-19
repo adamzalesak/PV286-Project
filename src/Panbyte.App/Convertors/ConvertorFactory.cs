@@ -1,4 +1,6 @@
-﻿using Panbyte.App.Convertors.Copy;
+﻿using Panbyte.App.Convertors.BitsTo;
+using Panbyte.App.Convertors.BytesTo;
+using Panbyte.App.Convertors.HexTo;
 using Panbyte.App.Parser;
 using Panbyte.App.Validators;
 

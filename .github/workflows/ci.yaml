@@ -26,6 +26,6 @@ jobs:
         run: dotnet publish src/Panbyte.App/Panbyte.App.csproj -c Release --sc true -r linux-x64 /p:PublishSingleFile=true /p:UseAppHost=true /p:DebugType=None /p:DebugSymbols=false -p:PublishDir=out
 
       - name: Tests
-        run: dotnet test
+        run: dotnet test --logger:"console;verbosity=normal"
         env:
           ACTIONS_APP_PATH: ${{ github.workspace }}/src/Panbyte.App/out/panbyte

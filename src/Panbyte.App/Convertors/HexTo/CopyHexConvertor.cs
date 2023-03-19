@@ -1,6 +1,6 @@
 ﻿using Panbyte.App.Validators;
 
-namespace Panbyte.App.Convertors.Copy;
+namespace Panbyte.App.Convertors.HexTo;
 
 public class CopyHexConvertor : Convertor
 {

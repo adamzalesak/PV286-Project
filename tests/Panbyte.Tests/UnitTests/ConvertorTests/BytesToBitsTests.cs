@@ -1,4 +1,4 @@
-﻿using Panbyte.App.Convertors;
+﻿using Panbyte.App.Convertors.BytesTo;
 using Panbyte.App.Validators;
 using Panbyte.Tests.Helpers;
 using Xunit;

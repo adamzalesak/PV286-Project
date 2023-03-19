@@ -1,4 +1,4 @@
-﻿namespace Panbyte.App.Convertors.Copy;
+﻿namespace Panbyte.App.Convertors.BytesTo;
 
 public class CopyBytesConvertor : IConvertor
 {
