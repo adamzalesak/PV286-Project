@@ -25,7 +25,7 @@ public class PanbyteIntegrationTests
     [InlineData("-f hex -t bits", "11", "00010001", 0)]
     [InlineData("-f hex -t bits", " fe  24", "1111111000100100", 0)]
     [InlineData("-f hex -t bits", "5", "", 4)]
-    [InlineData("-f hex -t bits", "01100001", "", 0)]
+    [InlineData("-f hex -t bits", "01100001", "00000001000100000000000000000001", 0)]
     [InlineData("-f bytes -t hex", "test", "74657374", 0)]
     [InlineData("-f bits --from-options=left -t bytes", "100 1111 0100 1011 ", "OK", 0)]
     [InlineData("-f bits --from-options=right -t hex", "100111101001011", "9e96", 0)]
