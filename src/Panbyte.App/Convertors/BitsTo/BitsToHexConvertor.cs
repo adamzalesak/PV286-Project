@@ -1,20 +1,21 @@
-﻿using Panbyte.App.Validators;
+﻿using Panbyte.App.Extensions;
+using Panbyte.App.Validators;
 
 namespace Panbyte.App.Convertors.BitsTo;
 
 public class BitsToHexConvertor : Convertor
 {
-    private readonly string _padding;
+    private readonly bool _leftPadding;
 
     public BitsToHexConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator)
         : base(convertorOptions, byteValidator)
     {
-        _padding = _convertorOptions.InputOption;
+        _leftPadding = _convertorOptions.InputOption == "left";
     }
 
     public override void ConvertPart(byte[] source, Stream destination)
     {
-        source = HandlePadding(source);
+        source = source.HandlePadding(_leftPadding);
 
         var bytes = GetBytes(source);
 
@@ -23,25 +24,6 @@ public class BitsToHexConvertor : Convertor
         var byteArray = System.Text.Encoding.ASCII.GetBytes(hex);
 
         destination.Write(byteArray, 0, byteArray.Length);
-    }
-
-
-    private byte[] HandlePadding(byte[] source)
-    {
-        if (source.Length % 8 != 0 && _padding == "left")
-        {
-            var padding = new byte[8 - source.Length % 8];
-            padding = padding.Select(_ => (byte)'0').ToArray();
-            source = padding.Concat(source).ToArray();
-        }
-        else if (source.Length % 8 != 0 && _padding == "right")
-        {
-            var padding = new byte[8 - source.Length % 8];
-            padding = padding.Select(_ => (byte)'0').ToArray();
-            source = source.Concat(padding).ToArray();
-        }
-
-        return source;
     }
 
     private static List<byte> GetBytes(byte[] source)

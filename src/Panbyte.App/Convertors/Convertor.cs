@@ -29,7 +29,7 @@ public abstract class Convertor<TOptions> : IConvertor
     }
 
     public abstract void ConvertPart(byte[] source, Stream destination);
-    public virtual bool InputDelimeterEnabled() => false; // todo zatim nepodporovat _rawBytesDelimeter.Any();
+    public virtual bool InputDelimeterEnabled() => _rawBytesDelimeter.Any();
 
     public void Convert(Stream source, Stream destination)
     {

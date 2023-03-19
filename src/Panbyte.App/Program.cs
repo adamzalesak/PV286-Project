@@ -58,7 +58,6 @@ catch (InvalidFormatCharacter ex)
 }
 catch
 {
-    Console.WriteLine("Unknown error");
     return 4;
 }
 

@@ -27,7 +27,10 @@ public static class ArgumentTypeExtensions
     public static bool IsToOptionValid(string value) =>
            value == "big"
         || value == "little"
-        || value == "0x"
+        || IsArrayToOptionValid(value);
+
+    public static bool IsArrayToOptionValid(string value) =>
+           value == "0x"
         || value == "0"
         || value == "0b"
         || value == "{"

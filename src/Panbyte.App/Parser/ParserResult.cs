@@ -24,10 +24,10 @@ public record ParserResult(bool Success, string ErrorMessage = "")
     public IConvertor TryCreateConvertor()
     {
         Arguments.TryGetValue(ArgumentType.From, out var tmp);
-        var fromArg = tmp?.FirstOrDefault()?.ToFormatType() ?? throw new NotImplementedException();
+        var fromArg = tmp?.FirstOrDefault("bytes").ToFormatType() ?? Format.Bytes;
 
         Arguments.TryGetValue(ArgumentType.To, out tmp);
-        var toArg = tmp?.FirstOrDefault()?.ToFormatType() ?? throw new NotImplementedException();
+        var toArg = tmp?.FirstOrDefault("bytes").ToFormatType() ?? Format.Bytes;
 
         Arguments.TryGetValue(ArgumentType.Delimiter, out var del);
         var delArg = del?.FirstOrDefault() ?? Environment.NewLine;
@@ -55,45 +55,4 @@ public record ParserResult(bool Success, string ErrorMessage = "")
         }
         return Array.Empty<string>();
     }
-}
-
-
-public enum Format
-{
-    Int,
-    Hex,
-    Bits,
-    Bytes,
-    Array
-}
-
-public static class FormatTypeExtensions
-{
-    public static Format ToFormatType(this string value) => value switch
-    {
-        "bytes" => Format.Bytes,
-        "bits" => Format.Bits,
-        "hex" => Format.Hex,
-        "array" => Format.Array,
-        "int" => Format.Int,
-        _ => throw new NotSupportedException()
-    };
-
-    public static bool IsInputOptionValid(this Format formatType, string inputOption) => formatType switch
-    {
-        Format.Int => inputOption == "big" || inputOption == "little",
-        Format.Hex => false,
-        Format.Bits => inputOption == "right" || inputOption == "left",
-        Format.Bytes => false,
-        Format.Array => false,
-    };
-
-    public static bool IsOutputOptionValid(this Format formatType, string outputOption) => formatType switch
-    {
-        Format.Int => throw new NotImplementedException(),
-        Format.Hex => throw new NotImplementedException(),
-        Format.Bits => throw new NotImplementedException(),
-        Format.Bytes => throw new NotImplementedException(),
-        Format.Array => throw new NotImplementedException(),
-    };
 }

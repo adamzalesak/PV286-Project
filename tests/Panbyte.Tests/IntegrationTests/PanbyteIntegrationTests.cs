@@ -12,6 +12,7 @@ public class PanbyteIntegrationTests
     [InlineData("-h", "", "", 0)]
     [InlineData("--help", "", "", 0)]
     [InlineData("-f bytes -t bytes", "test", "test", 0)]
+    [InlineData("-f bytes --to=bits", "a", "01100001", 0)]
     [InlineData("-f hex -t hex", "AC19", "AC19", 0)]
     [InlineData("-f hex -t hex", "AF 12", "AF12", 0)]
     [InlineData("-f hex -t hex", "AG", "", 6)]
@@ -24,7 +25,11 @@ public class PanbyteIntegrationTests
     [InlineData("-f hex -t bits", "11", "00010001", 0)]
     [InlineData("-f hex -t bits", " fe  24", "1111111000100100", 0)]
     [InlineData("-f hex -t bits", "5", "", 4)]
-    [InlineData("-f hex -t bits", "16fg", "", 6)]
+    [InlineData("-f hex -t bits", "01100001", "", 0)]
+    [InlineData("-f bytes -t hex", "test", "74657374", 0)]
+    [InlineData("-f bits --from-options=left -t bytes", "100 1111 0100 1011 ", "OK", 0)]
+    [InlineData("-f bits --from-options=right -t hex", "100111101001011", "9e96", 0)]
+    [InlineData("-f bytes -t bits", "OK", "0100111101001011", 0)]
     public async Task TestsWithPipes(string arguments, string input, string output, int errCode)
     {
         using var outputStream = new MemoryStream();
@@ -41,7 +46,8 @@ public class PanbyteIntegrationTests
 
         if (!string.IsNullOrEmpty(output))
         {
-            Assert.Equal(output, outputStream.ToText());
+            var outputText = outputStream.ToText();
+            Assert.Equal(output, outputText);
         }
     }
 

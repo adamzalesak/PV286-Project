@@ -32,6 +32,7 @@ public class ArgumentParserTests
     [Theory]
     [InlineData(new string[] { "-f", "idk", "-t", "idk" }, false)]
     [InlineData(new string[] { "-f", "bits", "-t", "bytes" }, true)]
+    [InlineData(new string[] { "-f", "bits", "-from-options=", "-t", "bytes" }, false)]
     public void Parse_Tests(string[] args, bool result)
     {
         var parserResult = new ArgumentParser(args).Parse();
