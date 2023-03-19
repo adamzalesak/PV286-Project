@@ -29,10 +29,4 @@ public class HexToBytesConvertor : Convertor
 
         destination.Flush();
     }
-
-    public override bool ValidateOptions(out string errorMessage)
-    {
-        errorMessage = string.Empty;
-        return true;
-    }
 }

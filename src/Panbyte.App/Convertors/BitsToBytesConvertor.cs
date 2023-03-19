@@ -9,20 +9,13 @@ public class BitsToBytesConvertor : Convertor
     public BitsToBytesConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(
         convertorOptions, byteValidator)
     {
-        if (_convertorOptions.FromOptions.Count > 1 ||
-            (_convertorOptions.FromOptions.Count == 1 && (_convertorOptions.FromOptions.First() != "left" &&
-                                                          _convertorOptions.FromOptions.First() != "right")))
-        {
-            throw new ArgumentException("Invalid from-options value");
-        }
-
-        _padding = _convertorOptions.FromOptions.FirstOrDefault() ?? "left";
+        _padding = _convertorOptions.InputOption;
     }
 
     public override void ConvertPart(byte[] source, Stream destination)
     {
         source = HandlePadding(source);
-        
+
         var sourceString = System.Text.Encoding.ASCII.GetString(source);
         var remainder = source.Length % 8;
         byte oneByte;

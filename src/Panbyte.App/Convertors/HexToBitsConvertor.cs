@@ -12,9 +12,4 @@ public class HexToBitsConvertor : Convertor
     {
         throw new NotImplementedException();
     }
-
-    public override bool ValidateOptions(out string errorMessage)
-    {
-        throw new NotImplementedException();
-    }
 }

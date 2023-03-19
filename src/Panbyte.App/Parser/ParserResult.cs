@@ -21,25 +21,79 @@ public record ParserResult(bool Success, string ErrorMessage = "")
         return (input?.FirstOrDefault() ?? Constants.Stdin, output?.FirstOrDefault() ?? Constants.Stdout);
     }
 
-    public IConvertor CreateConvertorFromArguments()
+    public IConvertor TryCreateConvertor()
     {
         Arguments.TryGetValue(ArgumentType.From, out var tmp);
-        var fromArg = tmp?.FirstOrDefault()!;
+        var fromArg = tmp?.FirstOrDefault()?.ToFormatType() ?? throw new NotImplementedException();
 
         Arguments.TryGetValue(ArgumentType.To, out tmp);
-        var toArg = tmp?.FirstOrDefault()!;
+        var toArg = tmp?.FirstOrDefault()?.ToFormatType() ?? throw new NotImplementedException();
 
-        Arguments.TryGetValue(ArgumentType.Delimiter, out var delimiter);
-        var delArg = delimiter?.FirstOrDefault() ?? Environment.NewLine;
+        Arguments.TryGetValue(ArgumentType.del, out var del);
+        var delArg = del?.FirstOrDefault() ?? Environment.NewLine;
 
-        Arguments.TryGetValue(ArgumentType.FromOptions, out var fromOptions);
-        Arguments.TryGetValue(ArgumentType.ToOptions, out var toOptions);
+        var inputOptions = GetInputOptions(Arguments, fromArg);
+        var outputOptions = GetOutputOptions(Arguments, fromArg);
 
-        var convertorOptions = new ConvertorOptions(
-            fromOptions is null ? Array.Empty<string>() : fromOptions,
-            toOptions is null ? Array.Empty<string>() : toOptions,
-            delArg);
-
-        return ConvertorFactory.CreateConvertor(fromArg, toArg, convertorOptions);
+        return ConvertorFactory.Create(fromArg, toArg, delArg, inputOptions, outputOptions);
     }
+
+    private static string[] GetInputOptions(IReadOnlyDictionary<ArgumentType, List<string>> arguments, Format format)
+    {
+        if (arguments.TryGetValue(ArgumentType.FromOptions, out var fromOptions))
+        {
+            return fromOptions.Where(i => format.IsInputOptionValid(i)).ToArray();
+        }
+        return Array.Empty<string>();
+    }
+
+    private static string[] GetOutputOptions(IReadOnlyDictionary<ArgumentType, List<string>> arguments, Format format)
+    {
+        if (arguments.TryGetValue(ArgumentType.ToOptions, out var fromOptions))
+        {
+            return fromOptions.Where(i => format.IsOutputOptionValid(i)).ToArray();
+        }
+        return Array.Empty<string>();
+    }
+}
+
+
+public enum Format
+{
+    Int,
+    Hex,
+    Bits,
+    Bytes,
+    Array
+}
+
+public static class FormatTypeExtensions
+{
+    public static Format ToFormatType(this string value) => value switch
+    {
+        "bytes" => Format.Bytes,
+        "bits" => Format.Bits,
+        "hex" => Format.Hex,
+        "array" => Format.Array,
+        "int" => Format.Int,
+        _ => throw new NotSupportedException()
+    };
+
+    public static bool IsInputOptionValid(this Format formatType, string inputOption) => formatType switch
+    {
+        Format.Int => inputOption == "big" || inputOption == "little",
+        Format.Hex => false,
+        Format.Bits => inputOption == "right" || inputOption == "left",
+        Format.Bytes => false,
+        Format.Array => false,
+    };
+
+    public static bool IsOutputOptionValid(this Format formatType, string outputOption) => formatType switch
+    {
+        Format.Int => throw new NotImplementedException(),
+        Format.Hex => throw new NotImplementedException(),
+        Format.Bits => throw new NotImplementedException(),
+        Format.Bytes => throw new NotImplementedException(),
+        Format.Array => throw new NotImplementedException(),
+    };
 }

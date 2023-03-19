@@ -13,7 +13,7 @@ public class ArgumentParser
         { "-f", ArgumentType.From},
         { "-i", ArgumentType.Input},
         { "-o", ArgumentType.Output},
-        { "-d", ArgumentType.Delimiter},
+        { "-d", ArgumentType.del},
     };
     private readonly static Dictionary<string, ArgumentType> ArgumentNames = new()
     {
@@ -23,11 +23,11 @@ public class ArgumentParser
         { "from-options", ArgumentType.FromOptions},
         { "input", ArgumentType.Input},
         { "output", ArgumentType.Output},
-        { "delimiter", ArgumentType.Delimiter},
+        { "del", ArgumentType.del},
     };
 
     private static readonly Regex longArgumentRegex = new(
-        @"^--(?<name>input|output|from|from-options|to|to-options|delimiter)=(?<value>.*)$",
+        @"^--(?<name>input|output|from|from-options|to|to-options|del)=(?<value>.*)$",
         RegexOptions.Compiled,
         TimeSpan.FromMilliseconds(250));
 
@@ -91,7 +91,7 @@ public class ArgumentParser
             }
         }
 
-        //todo ArgumentValueValidator class?
+        //todo ArgumentValueValidator class, bude tam i validace options apod.
         if (!_arguments.ContainsKey(ArgumentType.To))
         {
             return new("Missing 'to' argument");
