@@ -9,8 +9,8 @@ public class PanbyteIntegrationTests
     private static readonly string exePath = GetAppExePath();
 
     [Theory]
-    [InlineData("-h", "", "", 1)]
-    [InlineData("--help", "", "", 1)]
+    [InlineData("-h", "", "", 0)]
+    [InlineData("--help", "", "", 0)]
     [InlineData("-f bytes -t bytes", "test", "test", 0)]
     [InlineData("-f hex -t hex", "AC19", "AC19", 0)]
     [InlineData("-f hex -t hex", "AF 12", "AF12", 0)]
