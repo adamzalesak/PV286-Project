@@ -1,4 +1,10 @@
-﻿namespace Panbyte.App.Convertors;
+﻿using Panbyte.App.Convertors.BitsTo;
+using Panbyte.App.Convertors.BytesTo;
+using Panbyte.App.Convertors.HexTo;
+using Panbyte.App.Parser;
+using Panbyte.App.Validators;
+
+namespace Panbyte.App.Convertors;
 
 public static class ConvertorFactory
 {

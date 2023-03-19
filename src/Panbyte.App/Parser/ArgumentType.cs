@@ -8,7 +8,7 @@ public enum ArgumentType
     FromOptions,
     Input,
     Output,
-    del,
+    Delimiter,
 }
 
 public static class ArgumentTypeExtensions
@@ -20,7 +20,7 @@ public static class ArgumentTypeExtensions
             ArgumentType.FromOptions => value == "big" || value == "little" || value == "left" || value == "right",
             ArgumentType.ToOptions => IsToOptionValid(value),
             ArgumentType.Input or ArgumentType.Output => true,
-            ArgumentType.del => true,
+            ArgumentType.Delimiter => true,
             _ => throw new NotImplementedException(),
         };
 

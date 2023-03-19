@@ -1,6 +1,6 @@
 ﻿using Panbyte.App.Validators;
 
-namespace Panbyte.App.Convertors;
+namespace Panbyte.App.Convertors.BytesTo;
 
 public class BytesToBitsConvertor : Convertor
 {

@@ -1,6 +1,6 @@
 ﻿using Panbyte.App.Validators;
 
-namespace Panbyte.App.Convertors;
+namespace Panbyte.App.Convertors.BitsTo;
 
 public class BitsToHexConvertor : Convertor
 {
@@ -30,13 +30,13 @@ public class BitsToHexConvertor : Convertor
     {
         if (source.Length % 8 != 0 && _padding == "left")
         {
-            var padding = new byte[8 - (source.Length % 8)];
+            var padding = new byte[8 - source.Length % 8];
             padding = padding.Select(_ => (byte)'0').ToArray();
             source = padding.Concat(source).ToArray();
         }
         else if (source.Length % 8 != 0 && _padding == "right")
         {
-            var padding = new byte[8 - (source.Length % 8)];
+            var padding = new byte[8 - source.Length % 8];
             padding = padding.Select(_ => (byte)'0').ToArray();
             source = source.Concat(padding).ToArray();
         }

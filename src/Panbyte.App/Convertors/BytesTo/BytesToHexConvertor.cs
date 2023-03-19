@@ -1,11 +1,11 @@
 ﻿using Panbyte.App.Validators;
 
-namespace Panbyte.App.Convertors;
+namespace Panbyte.App.Convertors.BytesTo;
 
 public class BytesToHexConvertor : Convertor
 {
-    public BytesToHexConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions,
-        byteValidator)
+    public BytesToHexConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator)
+        : base(convertorOptions, byteValidator)
     {
     }
 

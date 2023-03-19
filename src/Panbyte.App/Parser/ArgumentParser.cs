@@ -13,7 +13,7 @@ public class ArgumentParser
         { "-f", ArgumentType.From},
         { "-i", ArgumentType.Input},
         { "-o", ArgumentType.Output},
-        { "-d", ArgumentType.del},
+        { "-d", ArgumentType.Delimiter},
     };
     private readonly static Dictionary<string, ArgumentType> ArgumentNames = new()
     {
@@ -23,7 +23,7 @@ public class ArgumentParser
         { "from-options", ArgumentType.FromOptions},
         { "input", ArgumentType.Input},
         { "output", ArgumentType.Output},
-        { "del", ArgumentType.del},
+        { "del", ArgumentType.Delimiter},
     };
 
     private static readonly Regex longArgumentRegex = new(

@@ -29,7 +29,7 @@ public record ParserResult(bool Success, string ErrorMessage = "")
         Arguments.TryGetValue(ArgumentType.To, out tmp);
         var toArg = tmp?.FirstOrDefault()?.ToFormatType() ?? throw new NotImplementedException();
 
-        Arguments.TryGetValue(ArgumentType.del, out var del);
+        Arguments.TryGetValue(ArgumentType.Delimiter, out var del);
         var delArg = del?.FirstOrDefault() ?? Environment.NewLine;
 
         var inputOptions = GetInputOptions(Arguments, fromArg);

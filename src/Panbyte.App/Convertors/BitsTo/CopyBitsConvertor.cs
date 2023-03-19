@@ -1,6 +1,6 @@
 ﻿using Panbyte.App.Validators;
 
-namespace Panbyte.App.Convertors.Copy;
+namespace Panbyte.App.Convertors.BitsTo;
 
 public class CopyBitsConvertor : Convertor
 {
