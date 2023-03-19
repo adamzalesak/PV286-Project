@@ -1,8 +1,4 @@
-﻿using Panbyte.App.Convertors.Copy;
-using Panbyte.App.Parser;
-using Panbyte.App.Validators;
-
-namespace Panbyte.App.Convertors;
+﻿namespace Panbyte.App.Convertors;
 
 public static class ConvertorFactory
 {
