@@ -19,17 +19,17 @@ public abstract class Convertor<TOptions> : IConvertor
 
     protected virtual int BufferSize { get; } = 4096;
     protected readonly ConvertorOptions _convertorOptions;
-    private readonly byte[] _rawBytesDelimeter;
+    private readonly byte[] _rawBytesDelimiter;
 
     protected Convertor(TOptions convertorOptions, IByteValidator byteValidator)
     {
         _convertorOptions = convertorOptions;
         _byteValidator = byteValidator;
-        _rawBytesDelimeter = Encoding.UTF8.GetBytes(_convertorOptions.Delimeter);
+        _rawBytesDelimiter = Encoding.UTF8.GetBytes(_convertorOptions.Delimiter);
     }
 
     public abstract void ConvertPart(byte[] source, Stream destination);
-    public virtual bool InputDelimeterEnabled() => _rawBytesDelimeter.Any();
+    public virtual bool InputDelimiterEnabled() => _rawBytesDelimiter.Any();
 
     public void Convert(Stream source, Stream destination)
     {
@@ -48,10 +48,10 @@ public abstract class Convertor<TOptions> : IConvertor
                     throw new InvalidFormatCharacter();
             }
 
-            if (InputDelimeterEnabled() && byteValue == _rawBytesDelimeter.First())
+            if (InputDelimiterEnabled() && byteValue == _rawBytesDelimiter.First())
             {
                 var startPos = source.Position;
-                if (!TryReadDelimeter(source))
+                if (!TryReadDelimiter(source))
                 {
                     bytes.Add(byteValue);
                     source.Seek(startPos, SeekOrigin.Begin);
@@ -59,7 +59,7 @@ public abstract class Convertor<TOptions> : IConvertor
                 }
 
                 ConvertInternal(bytes, destination);
-                destination.Write(_rawBytesDelimeter);
+                destination.Write(_rawBytesDelimiter);
                 continue;
             }
             bytes.Add(byteValue);
@@ -82,18 +82,18 @@ public abstract class Convertor<TOptions> : IConvertor
         bytes.Clear();
     }
 
-    private bool TryReadDelimeter(Stream source)
+    private bool TryReadDelimiter(Stream source)
     {
         source.Seek(source.Position == 0 ? 0 : -1, SeekOrigin.Current);
-        var delimeter = new byte[_rawBytesDelimeter.Length];
+        var delimiter = new byte[_rawBytesDelimiter.Length];
         try
         {
-            source.ReadExactly(delimeter, 0, _rawBytesDelimeter.Length);
+            source.ReadExactly(delimiter, 0, _rawBytesDelimiter.Length);
         }
         catch
         {
             return false;
         }
-        return _rawBytesDelimeter.SequenceEqual(delimeter);
+        return _rawBytesDelimiter.SequenceEqual(delimiter);
     }
 }
