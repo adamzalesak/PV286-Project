@@ -6,11 +6,11 @@ namespace Panbyte.App.Convertors;
 
 public abstract class Convertor : Convertor<ConvertorOptions>
 {
-    protected Convertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions, byteValidator)
+    protected Convertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions,
+        byteValidator)
     {
     }
 }
-
 
 public abstract class Convertor<TOptions> : IConvertor
     where TOptions : ConvertorOptions
@@ -35,6 +35,14 @@ public abstract class Convertor<TOptions> : IConvertor
     {
         var bytes = new List<byte>();
         int readByte;
+
+        if (!source.CanSeek)
+        {
+            var memoryStream = new MemoryStream();
+            source.CopyTo(memoryStream);
+            source = memoryStream;
+            source.Seek(0, SeekOrigin.Begin);
+        }
 
         while ((readByte = source.ReadByte()) != -1)
         {
@@ -62,6 +70,7 @@ public abstract class Convertor<TOptions> : IConvertor
                 destination.Write(_rawBytesDelimiter);
                 continue;
             }
+
             bytes.Add(byteValue);
 
             if (bytes.Count >= BufferSize)
@@ -94,6 +103,7 @@ public abstract class Convertor<TOptions> : IConvertor
         {
             return false;
         }
+
         return _rawBytesDelimiter.SequenceEqual(delimiter);
     }
 }
