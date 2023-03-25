@@ -23,12 +23,34 @@ public class StreamService : IStreamService
             ? Console.OpenStandardInput()
             : File.Open(path, FileMode.Open, FileAccess.Read, FileShare.None);
 
-        if (!source.CanSeek)
+        if (!source.CanSeek && Console.IsInputRedirected)
         {
             var memoryStream = new MemoryStream();
             source.CopyTo(memoryStream);
-            source = memoryStream;
-            source.Seek(0, SeekOrigin.Begin);
+            source.Dispose();
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return memoryStream;
+        }
+        if (!source.CanSeek)
+        {
+            var memoryStream = new MemoryStream();
+
+            ConsoleKeyInfo keyInfo = new();
+            while (keyInfo.Key != ConsoleKey.Escape)
+            {
+                keyInfo = Console.ReadKey(true);
+                if ((keyInfo.Modifiers & ConsoleModifiers.Control) != 0 && keyInfo.Key == ConsoleKey.D)
+                {
+                    break;
+                }
+                memoryStream.WriteByte((byte)keyInfo.KeyChar);
+                Console.Write(keyInfo.KeyChar);
+            }
+
+            Console.WriteLine();
+            source.Dispose();
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return memoryStream;
         }
 
         return source;

@@ -27,7 +27,7 @@ public class ArgumentParser
     };
 
     private static readonly Regex longArgumentRegex = new(
-        @"^--(?<name>input|output|from|from-options|to|to-options|del)=(?<value>.*)$",
+        @"^--(?<name>input|output|from|from-options|to|to-options|delimiter)=(?<value>.*)$",
         RegexOptions.Compiled,
         TimeSpan.FromMilliseconds(250));
 

@@ -36,12 +36,6 @@ if (!streamService.Exists(input))
     return 3;
 }
 
-if (!streamService.Exists(output))
-{
-    Console.WriteLine($"Output file '{output}' was not found");
-    return 3;
-}
-
 var convertor = parserResult.TryCreateConvertor();
 
 try
@@ -56,8 +50,11 @@ catch (InvalidFormatCharacter ex)
     Console.WriteLine($"{ex.Message}");
     return 6;
 }
-catch
+catch (Exception ex)
 {
+#if DEBUG
+    Console.WriteLine($"{ex.Message}");
+#endif
     return 4;
 }
 

@@ -27,8 +27,11 @@
   </ItemGroup>
 
   <ItemGroup>
-  	<None Update="TestData\test.txt">
-  		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  	<None Update="IntegrationTests\TestData\*">
+  	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  	</None>
+  	<None Update="UnitTests\TestData\*">
+  	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   	</None>
   </ItemGroup>
 

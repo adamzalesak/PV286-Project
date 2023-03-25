@@ -1,4 +1,5 @@
 using Panbyte.App.Exceptions;
+using Panbyte.App.Extensions;
 using Panbyte.App.Validators;
 using System.Text;
 
@@ -6,8 +7,7 @@ namespace Panbyte.App.Convertors;
 
 public abstract class Convertor : Convertor<ConvertorOptions>
 {
-    protected Convertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions,
-        byteValidator)
+    protected Convertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions, byteValidator)
     {
     }
 }
@@ -29,26 +29,20 @@ public abstract class Convertor<TOptions> : IConvertor
     }
 
     public abstract void ConvertPart(byte[] source, Stream destination);
-    public virtual bool InputDelimiterEnabled() => _rawBytesDelimiter.Any();
 
     public void Convert(Stream source, Stream destination)
     {
         var bytes = new List<byte>();
         int readByte;
 
+        source.SkipBOMHeaders();
+
         while ((readByte = source.ReadByte()) != -1)
         {
             var byteValue = (byte)readByte;
 
-            switch (_byteValidator.ValidateByte(byteValue))
-            {
-                case ByteValidation.Ignore:
-                    continue;
-                case ByteValidation.Error:
-                    throw new InvalidFormatCharacter();
-            }
-
-            if (InputDelimiterEnabled() && byteValue == _rawBytesDelimiter.First())
+            // check delimiter
+            if (_rawBytesDelimiter.Any() && byteValue == _rawBytesDelimiter.First())
             {
                 var startPos = source.Position;
                 if (!TryReadDelimiter(source))
@@ -63,8 +57,17 @@ public abstract class Convertor<TOptions> : IConvertor
                 continue;
             }
 
-            bytes.Add(byteValue);
+            // check or ignore invalid chars
+            switch (_byteValidator.ValidateByte(byteValue))
+            {
+                case ByteValidation.Ignore:
+                    continue;
+                case ByteValidation.Error:
+                    throw new InvalidFormatCharacter(byteValue);
+            }
 
+            // convert
+            bytes.Add(byteValue);
             if (bytes.Count >= BufferSize)
             {
                 ConvertInternal(bytes, destination);
@@ -87,15 +90,7 @@ public abstract class Convertor<TOptions> : IConvertor
     {
         source.Seek(source.Position == 0 ? 0 : -1, SeekOrigin.Current);
         var delimiter = new byte[_rawBytesDelimiter.Length];
-        try
-        {
-            source.ReadExactly(delimiter, 0, _rawBytesDelimiter.Length);
-        }
-        catch
-        {
-            return false;
-        }
-
+        source.Read(delimiter, 0, _rawBytesDelimiter.Length);
         return _rawBytesDelimiter.SequenceEqual(delimiter);
     }
 }

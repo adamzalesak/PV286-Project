@@ -6,6 +6,7 @@ namespace Panbyte.Tests.IntegrationTests;
 
 public class PanbyteIntegrationTests
 {
+    private const string TestDataPath = "IntegrationTests/TestData/";
     private static readonly string exePath = GetAppExePath();
 
     [Theory]
@@ -42,12 +43,37 @@ public class PanbyteIntegrationTests
             .WithValidation(CommandResultValidation.None)
             .ExecuteAsync();
 
+        var outputText = outputStream.ToText();
         Assert.Equal(errCode, app.ExitCode);
 
         if (!string.IsNullOrEmpty(output))
         {
-            var outputText = outputStream.ToText();
             Assert.Equal(output, outputText);
+        }
+    }
+
+    [Theory]
+    [FileData(TestDataPath + "result1.txt", $"-f hex -t bytes --delimiter=-- --input={TestDataPath}/test1.txt --output=result1.txt", "result1.txt", 0)]
+    [FileData(TestDataPath + "result2.txt", $"-f bytes -t bytes --delimiter=kk --input={TestDataPath}/test2.txt --output=result2.txt", "result2.txt", 0)]
+    [FileData(TestDataPath + "result3.txt", $"-f bits --from-options=right -t hex -d *a* --input={TestDataPath}/test3.txt --output=result3.txt", "result3.txt", 0)]
+    [InlineData("", "-f hex -t bytes -delimiter=--", "", 2)]
+    public async Task TestsWithFiles(string validOutputFileContent, string arguments, string resultFilePath, int errCode)
+    {
+        using var debugOutputStream = new MemoryStream();
+
+        var app = await Cli.Wrap(exePath)
+            .WithArguments(arguments)
+            .WithValidation(CommandResultValidation.None)
+            .WithStandardOutputPipe(PipeTarget.ToStream(debugOutputStream))
+            .ExecuteAsync();
+
+        var debugText = debugOutputStream.ToText();
+        Assert.Equal(errCode, app.ExitCode);
+
+        if (!string.IsNullOrEmpty(validOutputFileContent))
+        {
+            var outputText = FileHelper.ReadFile(resultFilePath);
+            Assert.Equal(validOutputFileContent, outputText);
         }
     }
 
@@ -60,5 +86,4 @@ public class PanbyteIntegrationTests
         }
         return Environment.GetEnvironmentVariable("ACTIONS_APP_PATH") ?? releaseExePath;
     }
-    //todo TestsWithFiles
 }
