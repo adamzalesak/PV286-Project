@@ -36,14 +36,6 @@ public abstract class Convertor<TOptions> : IConvertor
         var bytes = new List<byte>();
         int readByte;
 
-        if (!source.CanSeek)
-        {
-            var memoryStream = new MemoryStream();
-            source.CopyTo(memoryStream);
-            source = memoryStream;
-            source.Seek(0, SeekOrigin.Begin);
-        }
-
         while ((readByte = source.ReadByte()) != -1)
         {
             var byteValue = (byte)readByte;
