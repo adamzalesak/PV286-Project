@@ -30,7 +30,12 @@ public record ParserResult(bool Success, string ErrorMessage = "")
         var toArg = tmp?.FirstOrDefault("bytes").ToFormatType() ?? Format.Bytes;
 
         Arguments.TryGetValue(ArgumentType.Delimiter, out var del);
-        var delArg = del?.FirstOrDefault() ?? Environment.NewLine;
+        var delArg = del?.FirstOrDefault() ?? "";
+
+        if (delArg == @"\n")
+        {
+            delArg = Environment.NewLine;
+        }
 
         var inputOptions = GetInputOptions(Arguments, fromArg);
         var outputOptions = GetOutputOptions(Arguments, fromArg);
