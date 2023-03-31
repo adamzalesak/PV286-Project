@@ -1,5 +1,6 @@
 ﻿using Panbyte.App.Extensions;
 using Panbyte.App.Validators;
+using System.Text;
 
 namespace Panbyte.App.Convertors.BitsTo;
 
@@ -15,13 +16,11 @@ public class BitsToHexConvertor : Convertor
 
     public override void ConvertPart(byte[] source, Stream destination)
     {
-        source = source.HandlePadding(_leftPadding);
+        source = source.HandlePadding(4, _leftPadding);
 
         var bytes = GetBytes(source);
-
-        var hex = BitConverter.ToString(bytes.ToArray());
-        hex = hex.Replace("-", "").ToLower();
-        var byteArray = System.Text.Encoding.ASCII.GetBytes(hex);
+        var hex = GetHexString(bytes).ToLower();
+        var byteArray = Encoding.ASCII.GetBytes(hex);
 
         destination.Write(byteArray, 0, byteArray.Length);
     }
@@ -34,12 +33,12 @@ public class BitsToHexConvertor : Convertor
         foreach (var bit in source)
         {
             bits.Add(bit == '0' ? (byte)0 : (byte)1);
-            if (bits.Count == 8)
+            if (bits.Count == 4)
             {
                 var byteValue = 0;
-                for (var i = 0; i < 8; i++)
+                for (var i = 0; i < 4; i++)
                 {
-                    byteValue += bits[i] == 0 ? 0 : (int)Math.Pow(2, 7 - i);
+                    byteValue += bits[i] == 0 ? 0 : (int)Math.Pow(2, 3 - i);
                 }
 
                 bytes.Add((byte)byteValue);
@@ -48,5 +47,15 @@ public class BitsToHexConvertor : Convertor
         }
 
         return bytes;
+    }
+
+    private static string GetHexString(List<byte> bytes)
+    {
+        var result = new StringBuilder();
+        foreach (var byteValue in bytes)
+        {
+            result.Append(string.Format("{0:X}", byteValue));
+        }
+        return result.ToString();
     }
 }

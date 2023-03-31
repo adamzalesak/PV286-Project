@@ -2,17 +2,17 @@
 
 public static class ByteArrayExtensions
 {
-    public static byte[] HandlePadding(this byte[] source, bool left = true)
+    public static byte[] HandlePadding(this byte[] source, int padTo, bool left = true)
     {
-        if (source.Length % 8 != 0 && left)
+        if (source.Length % padTo != 0 && left)
         {
-            var padding = new byte[8 - source.Length % 8];
+            var padding = new byte[padTo - source.Length % padTo];
             padding = padding.Select(_ => (byte)'0').ToArray();
             source = padding.Concat(source).ToArray();
         }
-        else if (source.Length % 8 != 0 && !left)
+        else if (source.Length % padTo != 0 && !left)
         {
-            var padding = new byte[8 - source.Length % 8];
+            var padding = new byte[padTo - source.Length % padTo];
             padding = padding.Select(_ => (byte)'0').ToArray();
             source = source.Concat(padding).ToArray();
         }

@@ -15,7 +15,7 @@ public class BitsToBytesConvertor : Convertor
 
     public override void ConvertPart(byte[] source, Stream destination)
     {
-        source = source.HandlePadding(_leftPadding);
+        source = source.HandlePadding(8, _leftPadding);
 
         var sourceString = System.Text.Encoding.ASCII.GetString(source);
         var remainder = source.Length % 8;
