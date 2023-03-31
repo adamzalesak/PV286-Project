@@ -18,7 +18,7 @@ public abstract class Convertor<TOptions> : IConvertor
     private readonly IByteValidator _byteValidator;
 
     protected virtual int BufferSize { get; } = 4096;
-    protected readonly ConvertorOptions _convertorOptions;
+    protected readonly TOptions _convertorOptions;
     private readonly byte[] _rawBytesDelimiter;
 
     protected Convertor(TOptions convertorOptions, IByteValidator byteValidator)
@@ -80,9 +80,11 @@ public abstract class Convertor<TOptions> : IConvertor
         }
     }
 
+    protected virtual byte[] GetBytesToProcess(IList<byte> bytes) => bytes.ToArray();
+
     private void ConvertInternal(IList<byte> bytes, Stream destination)
     {
-        ConvertPart(bytes.ToArray(), destination);
+        ConvertPart(GetBytesToProcess(bytes), destination);
         bytes.Clear();
     }
 

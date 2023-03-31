@@ -1,4 +1,5 @@
-﻿using Panbyte.App.Convertors.BitsTo;
+﻿using Panbyte.App.Convertors.ArrayTo;
+using Panbyte.App.Convertors.BitsTo;
 using Panbyte.App.Convertors.BytesTo;
 using Panbyte.App.Convertors.HexTo;
 using Panbyte.App.Parser;
@@ -22,6 +23,10 @@ public static class ConvertorFactory
         { (Format.Hex, Format.Hex), (del, _, _) => new CopyHexConvertor(new ConvertorOptions(GetStringIfNotEmptyOrNewLine(del)), CreateByteValidator(Format.Hex))},
         { (Format.Hex, Format.Bytes), (del, _, _) => new HexToBytesConvertor(new ConvertorOptions(GetStringIfNotEmptyOrNewLine(del)), CreateByteValidator(Format.Hex))},
         { (Format.Hex, Format.Bits), (del, _, _) => new HexToBitsConvertor(new ConvertorOptions(GetStringIfNotEmptyOrNewLine(del)), CreateByteValidator(Format.Hex))},
+        { (Format.Hex, Format.Array), (del, _, _) => new HexToArrayConvertor(new ConvertorOptions(GetStringIfNotEmptyOrNewLine(del)), CreateByteValidator(Format.Hex))},
+        // array to x
+        { (Format.Array, Format.Array), (del, _, outputs) => new ArrayToArrayConvertor(new ArrayConvertorOptions(GetStringIfNotEmptyOrNewLine(del), outputs.ToArray(), "", Format.Array), CreateByteValidator(Format.Array))},
+        { (Format.Array, Format.Hex), (del, inputs, _) => new ArrayToXConvertor(new ArrayConvertorOptions(GetStringIfNotEmptyOrNewLine(del), Array.Empty<string>(), inputs.FirstOrDefault("left"), Format.Hex), CreateByteValidator(Format.Array))},
     };
 
     public static IConvertor Create(Format from, Format to, string del, ICollection<string> inputs, ICollection<string> outputs)
