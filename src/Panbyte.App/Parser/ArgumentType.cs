@@ -32,6 +32,7 @@ public static class ArgumentTypeExtensions
     public static bool IsArrayToOptionValid(string value) =>
            value == "0x"
         || value == "0"
+        || value == "a"
         || value == "0b"
         || value == "{"
         || value == "}"

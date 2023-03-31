@@ -2,7 +2,7 @@
 
 public class InvalidFormatCharacter : Exception
 {
-    public InvalidFormatCharacter(byte byteValue) : base($"Invalid character: {byteValue}")
+    public InvalidFormatCharacter(byte byteValue) : base($"\nInvalid character: {byteValue}")
     {
     }
 }
