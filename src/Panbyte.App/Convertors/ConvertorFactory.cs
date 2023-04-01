@@ -3,7 +3,6 @@ using Panbyte.App.Convertors.BitsTo;
 using Panbyte.App.Convertors.BytesTo;
 using Panbyte.App.Convertors.HexTo;
 using Panbyte.App.Parser;
-using Panbyte.App.Validators;
 
 namespace Panbyte.App.Convertors;
 
@@ -37,21 +36,4 @@ public static class ConvertorFactory
         }
         throw new NotImplementedException();
     }
-
-    private static string GetStringIfNotEmptyOrNewLine(string value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return Environment.NewLine;
-        }
-        return value;
-    }
-
-    private static IByteValidator CreateByteValidator(Format from) => from switch
-    {
-        Format.Bits => new BitsValidator(),
-        Format.Hex => new HexValidator(),
-        Format.Int => new IntValidator(),
-        _ => new DefaultValidator()
-    };
 }
