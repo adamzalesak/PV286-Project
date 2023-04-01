@@ -1,17 +1,16 @@
-﻿using Panbyte.App.Validators;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace Panbyte.App.Convertors.HexTo;
 
-public class HexToBytesConvertor : Convertor
+public class HexToBytesConvertor : IConvertor
 {
     private static readonly Regex WhiteSpaceRegex = new(@"\s+", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
-    public HexToBytesConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions, byteValidator)
+    public HexToBytesConvertor()
     {
     }
 
-    public override void ConvertPart(byte[] source, Stream destination)
+    public void ConvertPart(byte[] source, Stream destination)
     {
         var sourceString = System.Text.Encoding.ASCII.GetString(source);
         // remove all whitespaces
@@ -28,7 +27,5 @@ public class HexToBytesConvertor : Convertor
             oneByte = System.Convert.ToByte(sourceString.Substring(i, 2), 16);
             destination.WriteByte(oneByte);
         }
-
-        destination.Flush();
     }
 }

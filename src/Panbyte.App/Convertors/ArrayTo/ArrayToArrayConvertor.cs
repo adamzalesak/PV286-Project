@@ -1,13 +1,13 @@
 ﻿using Panbyte.App.Exceptions;
 using Panbyte.App.Parser;
-using Panbyte.App.Validators;
 
 namespace Panbyte.App.Convertors.ArrayTo;
 
-public class ArrayToArrayConvertor : Convertor<ArrayConvertorOptions>
+public class ArrayToArrayConvertor : IConvertor
 {
     protected virtual bool WritingToDestinationEnabled => true;
     protected virtual bool SupportNesting => true;
+    protected readonly ArrayConvertorOptions convertorOptions;
 
     private static readonly List<byte> leftBrackets = new() { (byte)'[', (byte)'(', (byte)'{' };
     private static readonly List<byte> rightBrackets = new() { (byte)']', (byte)')', (byte)'}' };
@@ -19,8 +19,9 @@ public class ArrayToArrayConvertor : Convertor<ArrayConvertorOptions>
     private readonly byte[] prefix;
     private readonly byte[] suffix;
 
-    public ArrayToArrayConvertor(ArrayConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions, byteValidator)
+    public ArrayToArrayConvertor(ArrayConvertorOptions convertorOptions)
     {
+        this.convertorOptions = convertorOptions;
         (outputLeftBracket, outputRightBracket) = SelectBracket(convertorOptions.OutputOptions.Where(i => !i.StartsWith('0') || !i.StartsWith('a')).LastOrDefault(""));
         arrayFormat = convertorOptions.OutputOptions.Where(i => i.StartsWith('0') || i.StartsWith('a')).LastOrDefault("0x");
         toFormat = arrayFormat switch
@@ -33,15 +34,15 @@ public class ArrayToArrayConvertor : Convertor<ArrayConvertorOptions>
         (prefix, suffix) = GetPrefixAndSuffix(arrayFormat);
     }
 
-    protected override byte[] GetBytesToProcess(IList<byte> bytes) => bytes.Where(i => !char.IsWhiteSpace((char)i)).ToArray();
-
-    public override void ConvertPart(byte[] source, Stream destination)
+    public void ConvertPart(byte[] source, Stream destination)
     {
+        source = source.Where(i => !char.IsWhiteSpace((char)i)).ToArray();
+
         Stack<byte> brackets = new();
         List<byte> bytesToProcess = new();
         State state = State.Start;
 
-        if (source[0] != '"' || source[source.Length - 1] != '"' || !rightBrackets.Contains(source[source.Length - 2]))
+        if (source[0] != '"' || source[^1] != '"' || !rightBrackets.Contains(source[^2]))
         {
             throw new NotImplementedException();
         }
@@ -164,7 +165,7 @@ public class ArrayToArrayConvertor : Convertor<ArrayConvertorOptions>
     {
         var (fromFormat, bytesToConvert) = GetBytes(bytes);
 
-        var convertor = ConvertorFactory.Create(fromFormat, toFormat, "", Array.Empty<string>(), Array.Empty<string>());
+        var convertor = ConvertorFactory.Create(fromFormat, toFormat, Array.Empty<string>(), Array.Empty<string>());
         if (arrayFormat == "a")
         {
             convertor.ConvertPart(bytesToConvert, destination);

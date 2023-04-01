@@ -1,22 +1,24 @@
-﻿using Panbyte.App.Validators;
+﻿namespace Panbyte.App.Convertors.BytesTo;
 
-namespace Panbyte.App.Convertors.BytesTo;
-
-public class BytesToHexConvertor : Convertor
+public class BytesToHexConvertor : IConvertor
 {
-    public BytesToHexConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator)
-        : base(convertorOptions, byteValidator)
+    private readonly bool lowerCase;
+
+    public BytesToHexConvertor(bool lowerCase = false)
     {
+        this.lowerCase = lowerCase;
     }
 
-    public override void ConvertPart(byte[] source, Stream destination)
+    public void ConvertPart(byte[] source, Stream destination)
     {
         var hex = BitConverter.ToString(source);
         hex = hex.Replace("-", "");
+        if (lowerCase)
+        {
+            hex = hex.ToLowerInvariant();
+        }
         var bytes = System.Text.Encoding.ASCII.GetBytes(hex);
 
         destination.Write(bytes, 0, bytes.Length);
-
-        destination.Flush();
     }
 }

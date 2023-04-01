@@ -5,30 +5,19 @@ using System.Text;
 
 namespace Panbyte.App.Convertors;
 
-public abstract class Convertor : Convertor<ConvertorOptions>
+public class ConvertorDirector
 {
-    protected Convertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions, byteValidator)
-    {
-    }
-}
-
-public abstract class Convertor<TOptions> : IConvertor
-    where TOptions : ConvertorOptions
-{
+    private readonly IConvertor _convertor;
     private readonly IByteValidator _byteValidator;
-
-    protected virtual int BufferSize { get; } = 4096;
-    protected readonly TOptions _convertorOptions;
     private readonly byte[] _rawBytesDelimiter;
+    private static readonly int _bufferSize = 4096;
 
-    protected Convertor(TOptions convertorOptions, IByteValidator byteValidator)
+    public ConvertorDirector(IConvertor convertor, IByteValidator byteValidator, string delimiter)
     {
-        _convertorOptions = convertorOptions;
+        _convertor = convertor;
         _byteValidator = byteValidator;
-        _rawBytesDelimiter = Encoding.UTF8.GetBytes(_convertorOptions.Delimiter);
+        _rawBytesDelimiter = Encoding.UTF8.GetBytes(delimiter);
     }
-
-    public abstract void ConvertPart(byte[] source, Stream destination);
 
     public void Convert(Stream source, Stream destination)
     {
@@ -68,7 +57,7 @@ public abstract class Convertor<TOptions> : IConvertor
 
             // convert
             bytes.Add(byteValue);
-            if (bytes.Count >= BufferSize)
+            if (bytes.Count >= _bufferSize)
             {
                 ConvertInternal(bytes, destination);
             }
@@ -80,11 +69,9 @@ public abstract class Convertor<TOptions> : IConvertor
         }
     }
 
-    protected virtual byte[] GetBytesToProcess(IList<byte> bytes) => bytes.ToArray();
-
     private void ConvertInternal(IList<byte> bytes, Stream destination)
     {
-        ConvertPart(GetBytesToProcess(bytes), destination);
+        _convertor.ConvertPart(bytes.ToArray(), destination);
         bytes.Clear();
     }
 
