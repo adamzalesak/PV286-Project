@@ -1,19 +1,17 @@
 ﻿using Panbyte.App.Extensions;
-using Panbyte.App.Validators;
 
 namespace Panbyte.App.Convertors.BitsTo;
 
-public class BitsToBytesConvertor : Convertor
+public class BitsToBytesConvertor : IConvertor
 {
     private readonly bool _leftPadding;
 
-    public BitsToBytesConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(
-        convertorOptions, byteValidator)
+    public BitsToBytesConvertor(ConvertorOptions convertorOptions)
     {
-        _leftPadding = _convertorOptions.InputOption == "left";
+        _leftPadding = convertorOptions.InputOption == "left";
     }
 
-    public override void ConvertPart(byte[] source, Stream destination)
+    public void ConvertPart(byte[] source, Stream destination)
     {
         source = source.HandlePadding(_leftPadding);
 

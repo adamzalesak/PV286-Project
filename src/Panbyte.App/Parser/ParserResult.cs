@@ -1,4 +1,5 @@
 ﻿using Panbyte.App.Convertors;
+using Panbyte.App.Validators;
 
 namespace Panbyte.App.Parser;
 
@@ -7,9 +8,22 @@ public record ParserResult(bool Success, string ErrorMessage = "")
     public IReadOnlyDictionary<ArgumentType, List<string>> Arguments { get; }
         = new Dictionary<ArgumentType, List<string>>();
 
+    private readonly string delimiter = string.Empty;
+    private readonly Format fromArg;
+    private readonly Format toArg;
+
     public ParserResult(IReadOnlyDictionary<ArgumentType, List<string>> arguments) : this(true)
     {
         Arguments = arguments;
+
+        Arguments.TryGetValue(ArgumentType.Delimiter, out var del);
+        delimiter = del?.FirstOrDefault() ?? "";
+
+        Arguments.TryGetValue(ArgumentType.From, out var tmp);
+        fromArg = tmp?.FirstOrDefault("bytes").ToFormatType() ?? Format.Bytes;
+
+        Arguments.TryGetValue(ArgumentType.To, out tmp);
+        toArg = tmp?.FirstOrDefault("bytes").ToFormatType() ?? Format.Bytes;
     }
 
     public ParserResult(string errorMessage) : this(false, errorMessage) { }
@@ -21,26 +35,38 @@ public record ParserResult(bool Success, string ErrorMessage = "")
         return (input?.FirstOrDefault() ?? Constants.Stdin, output?.FirstOrDefault() ?? Constants.Stdout);
     }
 
+    public string GetDelimiter()
+    {
+        if (delimiter == @"\n")
+        {
+            return Environment.NewLine;
+        }
+        if (string.IsNullOrEmpty(delimiter) && fromArg is Format.Bytes)
+        {
+            return string.Empty;
+        }
+        if (string.IsNullOrEmpty(delimiter))
+        {
+            return Environment.NewLine;
+        }
+        return delimiter;
+    }
+
+    public IByteValidator TryCreateValidator()
+        => fromArg switch
+        {
+            Format.Bits => new BitsValidator(),
+            Format.Hex => new HexValidator(),
+            Format.Int => new IntValidator(),
+            _ => new DefaultValidator()
+        };
+
     public IConvertor TryCreateConvertor()
     {
-        Arguments.TryGetValue(ArgumentType.From, out var tmp);
-        var fromArg = tmp?.FirstOrDefault("bytes").ToFormatType() ?? Format.Bytes;
-
-        Arguments.TryGetValue(ArgumentType.To, out tmp);
-        var toArg = tmp?.FirstOrDefault("bytes").ToFormatType() ?? Format.Bytes;
-
-        Arguments.TryGetValue(ArgumentType.Delimiter, out var del);
-        var delArg = del?.FirstOrDefault() ?? "";
-
-        if (delArg == @"\n")
-        {
-            delArg = Environment.NewLine;
-        }
-
         var inputOptions = GetInputOptions(Arguments, fromArg);
         var outputOptions = GetOutputOptions(Arguments, fromArg);
 
-        return ConvertorFactory.Create(fromArg, toArg, delArg, inputOptions, outputOptions);
+        return ConvertorFactory.Create(fromArg, toArg, inputOptions, outputOptions);
     }
 
     private static string[] GetInputOptions(IReadOnlyDictionary<ArgumentType, List<string>> arguments, Format format)

@@ -1,4 +1,5 @@
-﻿using Panbyte.App.Exceptions;
+﻿using Panbyte.App.Convertors;
+using Panbyte.App.Exceptions;
 using Panbyte.App.Parser;
 using Panbyte.App.Services;
 
@@ -37,12 +38,14 @@ if (!streamService.Exists(input))
 }
 
 var convertor = parserResult.TryCreateConvertor();
+var validator = parserResult.TryCreateValidator();
+var director = new ConvertorDirector(convertor, validator, parserResult.GetDelimiter());
 
 try
 {
     using var sourceStream = streamService.OpenInputStream(input);
     using var outputStream = streamService.OpenOutputStream(output);
-    convertor.Convert(sourceStream, outputStream);
+    director.Convert(sourceStream, outputStream);
     streamService.Save(outputStream);
 }
 catch (InvalidFormatCharacter ex)

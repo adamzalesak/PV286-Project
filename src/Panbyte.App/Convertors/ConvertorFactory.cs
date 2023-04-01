@@ -3,55 +3,37 @@ using Panbyte.App.Convertors.BitsTo;
 using Panbyte.App.Convertors.BytesTo;
 using Panbyte.App.Convertors.HexTo;
 using Panbyte.App.Parser;
-using Panbyte.App.Validators;
 
 namespace Panbyte.App.Convertors;
 
 public static class ConvertorFactory
 {
-    private static readonly Dictionary<(Format From, Format To), Func<string, ICollection<string>, ICollection<string>, IConvertor>> factory = new()
+    private static readonly Dictionary<(Format From, Format To), Func<ICollection<string>, ICollection<string>, IConvertor>> factory = new()
     {
         // bits to x
-        { (Format.Bits, Format.Bits), (del, inputs, _) => new CopyBitsConvertor(new ConvertorOptions(GetStringIfNotEmptyOrNewLine(del), inputs.FirstOrDefault("left")), CreateByteValidator(Format.Bits))},
-        { (Format.Bits, Format.Bytes), (del, inputs, _) => new BitsToBytesConvertor(new ConvertorOptions(GetStringIfNotEmptyOrNewLine(del), inputs.FirstOrDefault("left")), CreateByteValidator(Format.Bits))},
-        { (Format.Bits, Format.Hex), (del, inputs, _) => new BitsToHexConvertor(new ConvertorOptions(GetStringIfNotEmptyOrNewLine(del), inputs.FirstOrDefault("left")), CreateByteValidator(Format.Bits))},
+        { (Format.Bits, Format.Bits), (inputs, _) => new CopyConvertor()},
+        { (Format.Bits, Format.Bytes), (inputs, _) => new BitsToBytesConvertor(new ConvertorOptions(inputs.FirstOrDefault("left")))},
+        { (Format.Bits, Format.Hex), (inputs, _) => new CommonConvertor(new BitsToBytesConvertor(new ConvertorOptions(inputs.FirstOrDefault("left"))), new BytesToHexConvertor(true))},
         // bytes to x
-        { (Format.Bytes, Format.Bytes), (del, _, _) => new CopyBytesConvertor()},
-        { (Format.Bytes, Format.Hex), (del, _, _) => new BytesToHexConvertor(new ConvertorOptions(del), CreateByteValidator(Format.Bytes))},
-        { (Format.Bytes, Format.Bits), (del, _, _) => new BytesToBitsConvertor(new ConvertorOptions(del), CreateByteValidator(Format.Bytes))},
+        { (Format.Bytes, Format.Bytes), (_, _) => new CopyConvertor()},
+        { (Format.Bytes, Format.Hex), (_, _) => new BytesToHexConvertor()},
+        { (Format.Bytes, Format.Bits), (_, _) => new BytesToBitsConvertor()},
         // hex to x
-        { (Format.Hex, Format.Hex), (del, _, _) => new CopyHexConvertor(new ConvertorOptions(GetStringIfNotEmptyOrNewLine(del)), CreateByteValidator(Format.Hex))},
-        { (Format.Hex, Format.Bytes), (del, _, _) => new HexToBytesConvertor(new ConvertorOptions(GetStringIfNotEmptyOrNewLine(del)), CreateByteValidator(Format.Hex))},
-        { (Format.Hex, Format.Bits), (del, _, _) => new HexToBitsConvertor(new ConvertorOptions(GetStringIfNotEmptyOrNewLine(del)), CreateByteValidator(Format.Hex))},
-        { (Format.Hex, Format.Array), (del, _, _) => new HexToArrayConvertor(new ConvertorOptions(GetStringIfNotEmptyOrNewLine(del)), CreateByteValidator(Format.Hex))},
+        { (Format.Hex, Format.Hex), (_, _) => new CopyConvertor()},
+        { (Format.Hex, Format.Bytes), (_, _) => new HexToBytesConvertor()},
+        { (Format.Hex, Format.Bits), (_, _) => new CommonConvertor(new HexToBytesConvertor(), new BytesToBitsConvertor())},
+        { (Format.Hex, Format.Array), (_, _) => new HexToArrayConvertor()},
         // array to x
-        { (Format.Array, Format.Array), (del, _, outputs) => new ArrayToArrayConvertor(new ArrayConvertorOptions(GetStringIfNotEmptyOrNewLine(del), outputs.ToArray(), "", Format.Array), CreateByteValidator(Format.Array))},
-        { (Format.Array, Format.Hex), (del, inputs, _) => new ArrayToXConvertor(new ArrayConvertorOptions(GetStringIfNotEmptyOrNewLine(del), Array.Empty<string>(), inputs.FirstOrDefault("left"), Format.Hex), CreateByteValidator(Format.Array))},
+        { (Format.Array, Format.Array), (_, outputs) => new ArrayToArrayConvertor(new ArrayConvertorOptions(outputs.ToArray(), "", "", Format.Array))},
+        { (Format.Array, Format.Hex), (inputs, _) => new ArrayToXConvertor(new ArrayConvertorOptions(Array.Empty<string>(), inputs.FirstOrDefault("left"), "", Format.Hex))},
     };
 
-    public static IConvertor Create(Format from, Format to, string del, ICollection<string> inputs, ICollection<string> outputs)
+    public static IConvertor Create(Format from, Format to, ICollection<string> inputs, ICollection<string> outputs)
     {
         if (factory.TryGetValue((from, to), out var factoryMethod))
         {
-            return factoryMethod(del, inputs, outputs);
+            return factoryMethod(inputs, outputs);
         }
         throw new NotImplementedException();
     }
-
-    private static string GetStringIfNotEmptyOrNewLine(string value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return Environment.NewLine;
-        }
-        return value;
-    }
-
-    private static IByteValidator CreateByteValidator(Format from) => from switch
-    {
-        Format.Bits => new BitsValidator(),
-        Format.Hex => new HexValidator(),
-        Format.Int => new IntValidator(),
-        _ => new DefaultValidator()
-    };
 }

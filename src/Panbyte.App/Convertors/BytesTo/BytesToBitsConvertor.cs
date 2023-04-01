@@ -1,14 +1,13 @@
-﻿using Panbyte.App.Validators;
+﻿namespace Panbyte.App.Convertors.BytesTo;
 
-namespace Panbyte.App.Convertors.BytesTo;
-
-public class BytesToBitsConvertor : Convertor
+public class BytesToBitsConvertor : IConvertor
 {
-    public BytesToBitsConvertor(ConvertorOptions convertorOptions, IByteValidator byteValidator) : base(convertorOptions, byteValidator)
+    public BytesToBitsConvertor()
     {
+
     }
 
-    public override void ConvertPart(byte[] source, Stream destination)
+    public void ConvertPart(byte[] source, Stream destination)
     {
         var bits = new List<bool>();
         foreach (var b in source)
