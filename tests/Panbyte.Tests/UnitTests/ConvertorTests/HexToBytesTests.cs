@@ -1,6 +1,7 @@
 ﻿using Panbyte.App.Convertors.HexTo;
 using Panbyte.App.Validators;
 using Panbyte.Tests.Helpers;
+using System.Text;
 using Xunit;
 
 namespace Panbyte.Tests.UnitTests.ConvertorTests
@@ -17,10 +18,10 @@ namespace Panbyte.Tests.UnitTests.ConvertorTests
         [InlineData("6A6B6C6D6E6f70", "jklmnop")]
         public void Convert_WhenValidInput_ReturnsValidOutput(string input, string output)
         {
-            var convertor = new HexToBytesConvertor(new(""), new HexValidator());
-            using var stream = input.ToStream();
+            var convertor = new HexToBytesConvertor();
+            var bytes = Encoding.ASCII.GetBytes(input);
             using var memoryStream = new MemoryStream();
-            convertor.Convert(stream, memoryStream);
+            convertor.ConvertPart(bytes, memoryStream);
             Assert.Equal(output, memoryStream.ToText());
         }
     }
