@@ -64,7 +64,7 @@ public record ParserResult(bool Success, string ErrorMessage = "")
     public IConvertor TryCreateConvertor()
     {
         var inputOptions = GetInputOptions(Arguments, fromArg);
-        var outputOptions = GetOutputOptions(Arguments, fromArg);
+        var outputOptions = GetOutputOptions(Arguments, toArg);
 
         return ConvertorFactory.Create(fromArg, toArg, inputOptions, outputOptions);
     }
