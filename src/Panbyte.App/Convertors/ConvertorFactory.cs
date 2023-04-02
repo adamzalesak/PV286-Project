@@ -27,7 +27,7 @@ public static class ConvertorFactory
         { (Format.Hex, Format.Array), (_, _) => new HexToArrayConvertor()},
         { (Format.Hex, Format.Int), (_, outputs) => new CommonConvertor(new HexToBytesConvertor(), new BytesToIntConvertor(new ConvertorOptions("", outputs.FirstOrDefault("big"))))},
         // int to x
-        { (Format.Int, Format.Int), (_, _) => new CopyConvertor()},
+        { (Format.Int, Format.Int), (inputs, outputs) => new CommonConvertor(new IntToBytesConvertor(new ConvertorOptions(inputs.FirstOrDefault("big"))), new BytesToIntConvertor(new ConvertorOptions("", outputs.FirstOrDefault("big"))))},
         { (Format.Int, Format.Bytes), (inputs, _) => new IntToBytesConvertor(new ConvertorOptions(inputs.FirstOrDefault("big")))},
         { (Format.Int, Format.Bits), (inputs, _) => new CommonConvertor(new IntToBytesConvertor(new ConvertorOptions(inputs.FirstOrDefault("big"))), new BytesToBitsConvertor())},
         { (Format.Int, Format.Hex), (inputs, _) => new CommonConvertor(new IntToBytesConvertor(new ConvertorOptions(inputs.FirstOrDefault("big"))), new BytesToHexConvertor())},
