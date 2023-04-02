@@ -31,6 +31,13 @@ public class PanbyteIntegrationTests
     [InlineData("-f bits --from-options=left -t bytes", "100 1111 0100 1011 ", "OK", 0)]
     [InlineData("-f bits --from-options=right -t hex", "100111101001011", "9e96", 0)]
     [InlineData("-f bytes -t bits", "OK", "0100111101001011", 0)]
+    //int tests:
+    [InlineData("-f int -t hex", "1234567890", "499602D2", 0)]
+    [InlineData("-f int -t hex --from-options=big", "1234567890", "499602D2", 0)]
+    [InlineData("-f int -t hex --from-options=little", "1234567890", "D2029649", 0)]
+    [InlineData("-f hex -t int", "499602D2", "1234567890", 0)]
+    [InlineData("-f hex -t int --to-options=big", "499602D2", "1234567890", 0)]
+    [InlineData("-f hex -t int --to-options=little", "D2029649", "1234567890", 0)]
     //array tests:
     [InlineData("-f hex -t array", "01020304", "{0x1, 0x2, 0x3, 0x4}", 0)]
     [InlineData("-f array -t hex", "\"{0x01, 0b11, 0b11, '\x04'}\"", "01030304", 0)]
@@ -72,7 +79,6 @@ public class PanbyteIntegrationTests
             .WithStandardOutputPipe(PipeTarget.ToStream(debugOutputStream))
             .ExecuteAsync();
 
-        var debugText = debugOutputStream.ToText();
         Assert.Equal(errCode, app.ExitCode);
 
         if (!string.IsNullOrEmpty(validOutputFileContent))
