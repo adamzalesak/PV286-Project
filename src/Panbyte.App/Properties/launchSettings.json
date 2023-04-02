@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Panbyte.App": {
-      "commandName": "Project",
-      "commandLineArgs": "-f array -t hex --input=C:\\Users\\filip.hajek\\Desktop\\test.txt"
-    }
-  }
-}
