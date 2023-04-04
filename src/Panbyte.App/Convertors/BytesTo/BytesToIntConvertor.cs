@@ -1,3 +1,5 @@
+using Panbyte.App.Exceptions;
+
 namespace Panbyte.App.Convertors.BytesTo;
 
 public class BytesToIntConvertor : IConvertor
@@ -13,7 +15,7 @@ public class BytesToIntConvertor : IConvertor
     {
         if (source.Length > 4)
         {
-            throw new ArgumentException("Input is too long to be converted to an integer.");
+            throw new InvalidFormatException("Input is too long to be converted to an integer.");
         }
 
         if (source.Length < 4)

@@ -2,11 +2,6 @@
 
 public class BytesToBitsConvertor : IConvertor
 {
-    public BytesToBitsConvertor()
-    {
-
-    }
-
     public void ConvertPart(byte[] source, Stream destination)
     {
         var bits = new List<bool>();

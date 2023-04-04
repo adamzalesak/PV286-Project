@@ -17,20 +17,17 @@ public class BitsToBytesConvertor : IConvertor
 
         var sourceString = System.Text.Encoding.ASCII.GetString(source);
         var remainder = source.Length % 8;
-        byte oneByte;
 
         if (remainder != 0)
         {
-            oneByte = System.Convert.ToByte(sourceString[..remainder], 2);
+            var oneByte = Convert.ToByte(sourceString[..remainder], 2);
             destination.WriteByte(oneByte);
         }
 
         for (int i = remainder; i < source.Length; i += 8)
         {
-            oneByte = System.Convert.ToByte(sourceString.Substring(i, 8), 2);
+            var oneByte = Convert.ToByte(sourceString.Substring(i, 8), 2);
             destination.WriteByte(oneByte);
         }
-
-        destination.Flush();
     }
 }

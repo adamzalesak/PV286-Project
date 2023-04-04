@@ -52,7 +52,7 @@ public class ConvertorDirector
                 case ByteValidation.Ignore:
                     continue;
                 case ByteValidation.Error:
-                    throw new InvalidFormatCharacter(byteValue);
+                    throw new InvalidFormatCharacterException(byteValue);
             }
 
             // convert
@@ -71,7 +71,14 @@ public class ConvertorDirector
 
     private void ConvertInternal(IList<byte> bytes, Stream destination)
     {
-        _convertor.ConvertPart(bytes.ToArray(), destination);
+        var last2Bytes = bytes.TakeLast(2).ToArray();
+        var bytesToConvert = last2Bytes switch
+        {
+            [13, 10] => bytes.SkipLast(2).ToArray(),
+            [_, 10] => bytes.SkipLast(1).ToArray(),
+            _ => bytes.ToArray()
+        };
+        _convertor.ConvertPart(bytesToConvert, destination);
         bytes.Clear();
     }
 

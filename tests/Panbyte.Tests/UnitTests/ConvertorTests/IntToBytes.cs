@@ -1,7 +1,6 @@
-using System.Text;
 using Panbyte.App.Convertors;
 using Panbyte.App.Convertors.IntTo;
-using Panbyte.Tests.Helpers;
+using System.Text;
 using Xunit;
 
 namespace Panbyte.Tests.UnitTests.ConvertorTests;
@@ -21,7 +20,7 @@ public class IntToBytes
     [InlineData("4294967295", new byte[] { 255, 255, 255, 255 }, "little")]
     public void Convert_WhenValidInput_ReturnsValidOutput(string input, byte[] output, string? endian = "big")
     {
-        var convertor = new IntToBytesConvertor(new ConvertorOptions(endian));
+        var convertor = new IntToBytesConvertor(new ConvertorOptions(endian!));
         using var memoryStream = new MemoryStream();
         convertor.ConvertPart(Encoding.ASCII.GetBytes(input), memoryStream);
         Assert.Equal(output, memoryStream.ToArray());

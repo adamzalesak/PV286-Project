@@ -28,7 +28,6 @@ public class ArrayToArrayConvertor : IConvertor
         {
             "0b" => Format.Bits,
             "0" => Format.Int,
-            "a" => Format.Bytes,
             _ => Format.Hex
         };
         (prefix, suffix) = GetPrefixAndSuffix(arrayFormat);
@@ -36,7 +35,7 @@ public class ArrayToArrayConvertor : IConvertor
 
     public void ConvertPart(byte[] source, Stream destination)
     {
-        source = source.Where(i => !char.IsWhiteSpace((char)i)).ToArray();
+        source = source.Where(i => !char.IsWhiteSpace((char)i) && i != 0).ToArray();
 
         Stack<byte> brackets = new();
         List<byte> bytesToProcess = new();
@@ -44,7 +43,7 @@ public class ArrayToArrayConvertor : IConvertor
 
         if (source[0] != '"' || source[^1] != '"' || !rightBrackets.Contains(source[^2]))
         {
-            throw new NotImplementedException();
+            throw new InvalidFormatException("Array does not begin or end with quotes");
         }
 
         for (int i = 1; i < source.Length - 1; i++)
@@ -54,7 +53,7 @@ public class ArrayToArrayConvertor : IConvertor
                 case State.Start:
                     if (!leftBrackets.Contains(source[i]))
                     {
-                        throw new NotImplementedException();
+                        throw new InvalidFormatException("Array does not begin with left bracket");
                     }
                     PushToStack(brackets, source[i]);
                     state = State.LeftBracket;
@@ -80,7 +79,7 @@ public class ArrayToArrayConvertor : IConvertor
                             state = State.RightBracket;
                             break;
                         }
-                        throw new InvalidFormatCharacter(source[i]);
+                        throw new InvalidFormatCharacterException(source[i]);
                     }
                     if (source[i] != ',')
                     {
@@ -88,11 +87,12 @@ public class ArrayToArrayConvertor : IConvertor
                         state = State.FormattedInput;
                         break;
                     }
-                    throw new NotImplementedException();
+                    throw new InvalidFormatException();
                 case State.FormattedInput:
-                    if (bytesToProcess.Count >= 10)
+                    if (bytesToProcess.Count > 10)
                     {
-                        throw new NotImplementedException();
+                        // everything else is surely an error
+                        throw new InvalidFormatException();
                     }
                     if (source[i] == ',')
                     {
@@ -100,7 +100,7 @@ public class ArrayToArrayConvertor : IConvertor
                         {
                             ConvertInputPart(bytesToProcess.ToArray(), destination);
                             WriteByte(destination, source[i]);
-                            WriteByte(destination, 32);
+                            WriteByte(destination, (byte)' ');
                             bytesToProcess.Clear();
                         }
                         state = State.Comma;
@@ -119,14 +119,14 @@ public class ArrayToArrayConvertor : IConvertor
                             state = State.RightBracket;
                             break;
                         }
-                        throw new InvalidFormatCharacter(source[i]);
+                        throw new InvalidFormatCharacterException(source[i]);
                     }
                     bytesToProcess.Add(source[i]);
                     break;
                 case State.Comma:
                     if (rightBrackets.Contains(source[i]))
                     {
-                        throw new NotImplementedException();
+                        throw new InvalidFormatCharacterException(source[i]);
                     }
                     if (leftBrackets.Contains(source[i]))
                     {
@@ -147,16 +147,16 @@ public class ArrayToArrayConvertor : IConvertor
                             state = State.RightBracket;
                             break;
                         }
-                        throw new InvalidFormatCharacter(source[i]);
+                        throw new InvalidFormatCharacterException(source[i]);
                     }
                     if (source[i] == ',')
                     {
                         WriteByte(destination, source[i]);
-                        WriteByte(destination, 32);
+                        WriteByte(destination, (byte)' ');
                         state = State.Comma;
                         break;
                     }
-                    throw new NotImplementedException();
+                    throw new InvalidFormatException();
             }
         }
     }
@@ -165,16 +165,22 @@ public class ArrayToArrayConvertor : IConvertor
     {
         var (fromFormat, bytesToConvert) = GetBytes(bytes);
 
-        var convertor = ConvertorFactory.Create(fromFormat, toFormat, Array.Empty<string>(), Array.Empty<string>());
+        var options = toFormat == Format.Int && fromFormat != Format.Int ? new[] { "little" } : Array.Empty<string>();
+        var convertor = ConvertorFactory.Create(fromFormat, toFormat, Array.Empty<string>(), options);
+
+        destination.Write(prefix);
+        ConvertAndTrimLeadingZeros(convertor, bytesToConvert, destination);
+        destination.Write(suffix);
+    }
+
+    private void ConvertAndTrimLeadingZeros(IConvertor convertor, byte[] bytesToConvert, Stream destination)
+    {
         if (arrayFormat == "a")
         {
             convertor.ConvertPart(bytesToConvert, destination);
             return;
         }
 
-        destination.Write(prefix);
-
-        // trim zeros
         using var tmpStream = new MemoryStream();
         convertor.ConvertPart(bytesToConvert, tmpStream);
         var tmpArr = tmpStream.ToArray();
@@ -188,8 +194,6 @@ public class ArrayToArrayConvertor : IConvertor
             stop = true;
             destination.WriteByte(tmpArr[i]);
         }
-
-        destination.Write(suffix);
     }
 
     protected static (Format, byte[]) GetBytes(byte[] bytes)
@@ -197,11 +201,12 @@ public class ArrayToArrayConvertor : IConvertor
         return bytes switch
         {
             [48, 98, .. var left] => (Format.Bits, left),
-            [48, 120, (>= 48 and <= 57) or (>= 65 and <= 90), (>= 48 and <= 57) or (>= 65 and <= 90)] => (Format.Hex, bytes[2..]),
-            [39, 92, 120, (>= 48 and <= 57) or (>= 65 and <= 90), (>= 48 and <= 57) or (>= 65 and <= 90), 39] => (Format.Hex, bytes[3..^1]),
+            [48, 120, (>= 48 and <= 57) or (>= 65 and <= 90) or (>= 97 and <= 122)] => (Format.Hex, bytes[2..]),
+            [48, 120, (>= 48 and <= 57) or (>= 65 and <= 90) or (>= 97 and <= 122), (>= 48 and <= 57) or (>= 65 and <= 90) or (>= 97 and <= 122)] => (Format.Hex, bytes[2..]),
+            [39, 92, 120, (>= 48 and <= 57) or (>= 65 and <= 90) or (>= 97 and <= 122), (>= 48 and <= 57) or (>= 65 and <= 90) or (>= 97 and <= 122), 39] => (Format.Hex, bytes[3..^1]),
             [39, _, 39] => (Format.Bytes, bytes[1..2]),
             [>= 48 and <= 57, ..] => (Format.Int, bytes),
-            _ => throw new NotImplementedException()
+            _ => throw new InvalidFormatException()
         };
     }
 
@@ -217,22 +222,19 @@ public class ArrayToArrayConvertor : IConvertor
     {
         if (!SupportNesting && brackets.Count > 1)
         {
-            throw new NotImplementedException();
+            throw new InvalidFormatException("Format has nested brackets");
         }
         brackets.Push(value);
     }
 
-    private static (byte[] Prefix, byte[] Suffix) GetPrefixAndSuffix(string arrayFormat)
+    private static (byte[] Prefix, byte[] Suffix) GetPrefixAndSuffix(string arrayFormat) => arrayFormat switch
     {
-        return arrayFormat switch
-        {
-            "0" => (Array.Empty<byte>(), Array.Empty<byte>()),
-            "a" => (new byte[] { 39, 92, 120 }, new byte[] { 39 }),
-            "0b" => (new byte[] { 48, 98 }, Array.Empty<byte>()),
-            "0x" => (new byte[] { 48, 120 }, Array.Empty<byte>()),
-            _ => throw new NotSupportedException()
-        };
-    }
+        "0" => (Array.Empty<byte>(), Array.Empty<byte>()),
+        "a" => ("'\\x"u8.ToArray(), "'"u8.ToArray()),
+        "0b" => ("0b"u8.ToArray(), Array.Empty<byte>()),
+        "0x" => ("0x"u8.ToArray(), Array.Empty<byte>()),
+        _ => throw new InvalidFormatException()
+    };
 
     private static bool CheckRightBracket(char actual, Stack<byte> brackets)
     {
@@ -241,7 +243,7 @@ public class ArrayToArrayConvertor : IConvertor
             ']' => '[',
             ')' => '(',
             '}' => '{',
-            _ => throw new InvalidFormatCharacter((byte)actual)
+            _ => throw new InvalidFormatCharacterException((byte)actual)
         };
         if (brackets.TryPop(out var bracket) && bracket == leftBracket)
         {

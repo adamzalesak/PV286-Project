@@ -25,7 +25,7 @@ public class PanbyteIntegrationTests
     [InlineData("-f hex -t bytes", "74 65 73 74", "test", 0)]
     [InlineData("-f hex -t bits", "11", "00010001", 0)]
     [InlineData("-f hex -t bits", " fe  24", "1111111000100100", 0)]
-    [InlineData("-f hex -t bits", "5", "", 4)]
+    [InlineData("-f hex -t bits", "5", "", 6)]
     [InlineData("-f hex -t bits", "01100001", "00000001000100000000000000000001", 0)]
     [InlineData("-f bytes -t hex", "test", "74657374", 0)]
     [InlineData("-f bits --from-options=left -t bytes", "100 1111 0100 1011 ", "OK", 0)]
@@ -40,7 +40,17 @@ public class PanbyteIntegrationTests
     [InlineData("-f hex -t int --to-options=little", "D2029649", "1234567890", 0)]
     //array tests:
     [InlineData("-f hex -t array", "01020304", "{0x1, 0x2, 0x3, 0x4}", 0)]
-    [InlineData("-f array -t hex", "\"{0x01, 0b11, 0b11, '\x04'}\"", "01030304", 0)]
+    [InlineData("-f array -t hex", "\"{0x01, 2, 0b11, '\\x04'}\"", "01020304", 0)]
+    [InlineData("-f array -t array", "\"{0x01,2,0b11 ,'\\x04' }\"", "{0x1, 0x2, 0x3, 0x4}", 0)]
+    [InlineData("-f array -t array --to-options=0x", "\"[0x01, 2, 0b11, '\\x04']\"", "{0x1, 0x2, 0x3, 0x4}", 0)]
+    [InlineData("-f array -t array --to-options=0", "\"(0x01, 2, 0b11, '\\x04')\"", "{1, 2, 3, 4}", 0)]
+    [InlineData("-f array -t array --to-options=a", "\"{0x01, 2, 0b11, '\\x04'}\"", "{'\\x01', '\\x02', '\\x03', '\\x04'}", 0)]
+    [InlineData("-f array -t array --to-options=0b", "\"[0x01, 2, 0b11, '\\x04']\"", "{0b1, 0b10, 0b11, 0b100}", 0)]
+    [InlineData("-f array -t array --to-options=\"(\"", "\"(0x1, 0x2, 0x3, 0x4)\"", "(0x1, 0x2, 0x3, 0x4)", 0)]
+    [InlineData("-f array -t array --to-options=0 --to-options=\"[\"", "\"{0x01, 2, 0b11, '\\x04'}\"", "[1, 2, 3, 4]", 0)]
+    [InlineData("-f array -t array", "\"[[1, 2], [3, 4], [5, 6]]\"", "{{0x1, 0x2}, {0x3, 0x4}, {0x5, 0x6}}", 0)]
+    [InlineData("-f array -t array --to-options=\"{\" --to-options=0", "\"[[1, 2], [3, 4], [5, 6]]\"", "{{1, 2}, {3, 4}, {5, 6}}", 0)]
+    [InlineData("-f array -t array --to-options=0 --to-options=\"[\"", "\"{{0x01, (2), [3, 0b100, 0x05], '\\x06'}}\"", "[[1, [2], [3, 4, 5], 6]]", 0)]
     [InlineData("-f array -t array", "\"()\"", "{}", 0)]
     [InlineData("-f array -t array --to-options=\"[\"", "\"([],{})\"", "[[], []]", 0)]
     public async Task TestsWithPipes(string arguments, string input, string output, int errCode)
@@ -68,6 +78,7 @@ public class PanbyteIntegrationTests
     [FileData(TestDataPath + "result1.txt", $"-f hex -t bytes --delimiter=-- --input={TestDataPath}/test1.txt --output=result1.txt", "result1.txt", 0)]
     [FileData(TestDataPath + "result2.txt", $"-f bytes -t bytes --delimiter=kk --input={TestDataPath}/test2.txt --output=result2.txt", "result2.txt", 0)]
     [FileData(TestDataPath + "result3.txt", $"-f bits --from-options=right -t hex -d *a* --input={TestDataPath}/test3.txt --output=result3.txt", "result3.txt", 0)]
+    [FileData(TestDataPath + "result4.txt", $"-d , -f bits -t array --input={TestDataPath}/test4.txt --output=result4.txt", "result4.txt", 0)]
     [InlineData("", "-f hex -t bytes -delimiter=--", "", 2)]
     public async Task TestsWithFiles(string validOutputFileContent, string arguments, string resultFilePath, int errCode)
     {

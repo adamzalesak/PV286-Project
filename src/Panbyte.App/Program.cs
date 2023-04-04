@@ -1,4 +1,5 @@
-﻿using Panbyte.App.Convertors;
+﻿using Panbyte.App;
+using Panbyte.App.Convertors;
 using Panbyte.App.Exceptions;
 using Panbyte.App.Parser;
 using Panbyte.App.Services;
@@ -48,17 +49,20 @@ try
     director.Convert(sourceStream, outputStream);
     streamService.Save(outputStream);
 }
-catch (InvalidFormatCharacter ex)
-{
-    Console.WriteLine($"{ex.Message}");
-    return 6;
-}
 catch (Exception ex)
 {
-#if DEBUG
-    Console.WriteLine($"{ex.Message}");
-#endif
-    return 4;
+    var message = ex switch
+    {
+        InvalidFormatException or InvalidFormatCharacterException or NotSupportedException or NotImplementedException => ex.Message,
+        _ => "Application error"
+    };
+
+    if (output != Constants.Stdout)
+    {
+        File.Delete(output);
+    }
+    Console.WriteLine(message);
+    return 6;
 }
 
 return 0;
@@ -74,7 +78,7 @@ static void PrintHelp()
         "              --to-options=OPTIONS    Set output options\n" +
         "-i FILE       --input=FILE            Set input file (default stdin)\n" +
         "-o FILE       --output=FILE           Set output file (default stdout)\n" +
-        "-d del  --del=del   Record del (default newline)\n" +
+        "-d del        --del=del               Record delilimeter (default newline - for newline enter \\n)\n" +
         "-h            --help                  Print help\n\n" +
         "FORMATS:\n" +
         "bytes         Raw bytes\n" +

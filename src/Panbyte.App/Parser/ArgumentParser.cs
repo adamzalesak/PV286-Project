@@ -4,9 +4,6 @@ namespace Panbyte.App.Parser;
 
 public class ArgumentParser
 {
-    const int MaxArgumentLenght = 500;
-    const int MaxArguments = 20;
-
     private readonly static Dictionary<string, ArgumentType> ArgumentAliases = new()
     {
         { "-t", ArgumentType.To},
@@ -36,15 +33,6 @@ public class ArgumentParser
 
     public ArgumentParser(string[] args)
     {
-        if (args.Length > MaxArguments)
-        {
-            throw new ArgumentException("Too many arguments");
-        }
-
-        if (args.Any(i => i.Length > MaxArgumentLenght))
-        {
-            throw new ArgumentException("Too large argument");
-        }
         _args = args;
     }
 

@@ -1,4 +1,3 @@
-using System.Text;
 using Panbyte.App.Convertors;
 using Panbyte.App.Convertors.BytesTo;
 using Panbyte.Tests.Helpers;
@@ -21,7 +20,7 @@ public class BytesToInt
     [InlineData(new byte[] { 255, 255, 255, 255 }, "4294967295", "little")]
     public void Convert_WhenValidInput_ReturnsValidOutput(byte[] input, string output, string? endian = "big")
     {
-        var convertor = new BytesToIntConvertor(new ConvertorOptions("", endian));
+        var convertor = new BytesToIntConvertor(new ConvertorOptions("", endian!));
         using var memoryStream = new MemoryStream();
         convertor.ConvertPart(input, memoryStream);
         Assert.Equal(output, memoryStream.ToText());
