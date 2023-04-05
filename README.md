@@ -7,6 +7,9 @@ information can be seen by running the application with the `--help` argument.
 To build and run this project, you'll need to have the following software installed on your system:
 *   .NET 7.0 SDK
 
+# Download
+The latest version of the application is available as an executable for Windows or Linux at the **Releases** section of this repository.
+
 # Building
 To build the project, run the following command in the root directory of the project:
 ```bash
