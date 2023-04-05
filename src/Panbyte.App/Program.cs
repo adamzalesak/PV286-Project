@@ -78,7 +78,7 @@ static void PrintHelp()
         "              --to-options=OPTIONS    Set output options\n" +
         "-i FILE       --input=FILE            Set input file (default stdin)\n" +
         "-o FILE       --output=FILE           Set output file (default stdout)\n" +
-        "-d del        --del=del               Record delilimeter (default newline - for newline enter \\n)\n" +
+        "-d delimiter  --delimiter=delimiter   Record delimiter (default newline - for newline enter \\n)\n" +
         "-h            --help                  Print help\n\n" +
         "FORMATS:\n" +
         "bytes         Raw bytes\n" +
