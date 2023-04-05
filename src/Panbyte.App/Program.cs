@@ -1,6 +1,7 @@
 ﻿using Panbyte.App;
 using Panbyte.App.Convertors;
 using Panbyte.App.Exceptions;
+using Panbyte.App.Helpers;
 using Panbyte.App.Parser;
 using Panbyte.App.Services;
 
@@ -38,12 +39,13 @@ if (!streamService.Exists(input))
     return 3;
 }
 
-var convertor = parserResult.TryCreateConvertor();
-var validator = parserResult.TryCreateValidator();
-var director = new ConvertorDirector(convertor, validator, parserResult.GetDelimiter());
 
 try
 {
+    var convertor = parserResult.TryCreateConvertor();
+    var validator = parserResult.TryCreateValidator();
+    var director = new ConvertorDirector(convertor, validator, parserResult.GetDelimiter());
+
     using var sourceStream = streamService.OpenInputStream(input);
     using var outputStream = streamService.OpenOutputStream(output);
     director.Convert(sourceStream, outputStream);
@@ -61,6 +63,9 @@ catch (Exception ex)
     {
         File.Delete(output);
     }
+
+    ExceptionLogger.LogToFile(ex, args);
+
     Console.WriteLine(message);
     return 6;
 }
@@ -88,3 +93,5 @@ static void PrintHelp()
         "array         Byte array\n"
     );
 }
+
+
