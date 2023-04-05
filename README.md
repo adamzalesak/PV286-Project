@@ -5,7 +5,7 @@ information can be seen by running the application with the `--help` argument.
 
 # Prerequisites
 To build and run this project, you'll need to have the following software installed on your system:
-  * .NET 7.0 SDK
+* .NET 7.0 SDK
 
 # Building
 To build the project, run the following command in the root directory of the project:
@@ -28,6 +28,6 @@ dotnet test
 ```
 
 ## Authors
-  * Filip Hájek, 493341
-  * Katarína Platková, 493144
-  * Adam Zálešák, 493071
+* Filip Hájek, 493341
+* Katarína Platková, 493144
+* Adam Zálešák, 493071
