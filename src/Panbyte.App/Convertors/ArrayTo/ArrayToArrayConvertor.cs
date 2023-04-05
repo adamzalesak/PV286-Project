@@ -157,6 +157,8 @@ public class ArrayToArrayConvertor : IConvertor
                         break;
                     }
                     throw new InvalidFormatException();
+                default:
+                    throw new NotImplementedException();
             }
         }
     }

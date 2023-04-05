@@ -11,14 +11,14 @@ public class ArgumentParserTests
     [InlineData("--help", true)]
     public void IsHelpOptionProvided_WhenHelpProvided_ReturnsTrue(string help, bool result)
     {
-        var tmp = new string[] { "a", help, "c" };
+        var tmp = new[] { "a", help, "c" };
         Assert.Equal(result, new ArgumentParser(tmp).IsHelpOptionProvided());
     }
 
     [Theory]
-    [InlineData(new string[] { "-f", "idk", "-t", "idk" }, false)]
-    [InlineData(new string[] { "-f", "bits", "-t", "bytes" }, true)]
-    [InlineData(new string[] { "-f", "bits", "-from-options=", "-t", "bytes" }, false)]
+    [InlineData(new[] { "-f", "idk", "-t", "idk" }, false)]
+    [InlineData(new[] { "-f", "bits", "-t", "bytes" }, true)]
+    [InlineData(new[] { "-f", "bits", "-from-options=", "-t", "bytes" }, false)]
     public void Parse_Tests(string[] args, bool result)
     {
         var parserResult = new ArgumentParser(args).Parse();

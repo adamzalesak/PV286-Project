@@ -8,7 +8,7 @@ public class FileDataAttribute : DataAttribute
     private readonly string _filePath;
     private readonly object[] _dataParams;
 
-    public FileDataAttribute(string filePath, params object[] dataParams) : base()
+    public FileDataAttribute(string filePath, params object[] dataParams)
     {
         _filePath = filePath;
         _dataParams = dataParams;

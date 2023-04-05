@@ -2,10 +2,10 @@
 
 public static class Constants
 {
-    public const string Stdin = "stdin";
-    public const string Stdout = "stdout";
+    public static readonly string Stdin = "stdin";
+    public static readonly string Stdout = "stdout";
 
-    private static readonly IReadOnlyList<string> supportedFormats = new List<string>() { "bytes", "hex", "int", "bits" };
+    private static readonly IReadOnlyList<string> supportedFormats = new List<string> { "bytes", "hex", "int", "bits" };
 
     public static bool IsStdinOrStdout(this string path) => path == Stdin || path == Stdout;
 
