@@ -15,19 +15,19 @@ public static class ConvertorFactory
         { (Format.Bits, Format.Bits), (_, _) => new CopyConvertor()},
         { (Format.Bits, Format.Bytes), (inputs, _) => new BitsToBytesConvertor(new(inputs.FirstOrDefault("left")))},
         { (Format.Bits, Format.Hex), (inputs, _) => new CommonConvertor(new BitsToBytesConvertor(new(inputs.FirstOrDefault("left"))), new BytesToHexConvertor(true))},
-        { (Format.Bits, Format.Array), (inputs, outputs) => new XToArrayConvertor(new(Format.Bits, outputs))},
+        { (Format.Bits, Format.Array), (_, outputs) => new XToArrayConvertor(new(Format.Bits, outputs))},
         { (Format.Bits, Format.Int), (inputs, outputs) => new CommonConvertor(new BitsToBytesConvertor(new(inputs.FirstOrDefault("left"))), new BytesToIntConvertor(new("", outputs.FirstOrDefault("big"))))},
         // bytes to x
         { (Format.Bytes, Format.Bytes), (_, _) => new CopyConvertor()},
         { (Format.Bytes, Format.Hex), (_, _) => new BytesToHexConvertor()},
         { (Format.Bytes, Format.Bits), (_, _) => new BytesToBitsConvertor()},
         { (Format.Bytes, Format.Int), (_, outputs) => new BytesToIntConvertor(new(OutputOption: outputs.FirstOrDefault("big")))},
-        { (Format.Bytes, Format.Array), (inputs, outputs) => new XToArrayConvertor(new(Format.Bytes, outputs))},
+        { (Format.Bytes, Format.Array), (_, outputs) => new XToArrayConvertor(new(Format.Bytes, outputs))},
         // hex to x
         { (Format.Hex, Format.Hex), (_, _) => new CopyConvertor()},
         { (Format.Hex, Format.Bytes), (_, _) => new HexToBytesConvertor()},
         { (Format.Hex, Format.Bits), (_, _) => new CommonConvertor(new HexToBytesConvertor(), new BytesToBitsConvertor())},
-        { (Format.Hex, Format.Array), (inputs, outputs) => new XToArrayConvertor(new(Format.Hex, outputs))},
+        { (Format.Hex, Format.Array), (_, outputs) => new XToArrayConvertor(new(Format.Hex, outputs))},
         { (Format.Hex, Format.Int), (_, outputs) => new CommonConvertor(new HexToBytesConvertor(), new BytesToIntConvertor(new("", outputs.FirstOrDefault("big"))))},
         // int to x
         { (Format.Int, Format.Int), (inputs, outputs) => new CommonConvertor(new IntToBytesConvertor(new(inputs.FirstOrDefault("big"))), new BytesToIntConvertor(new("", outputs.FirstOrDefault("big"))))},

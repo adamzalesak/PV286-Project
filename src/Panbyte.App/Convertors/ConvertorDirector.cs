@@ -47,12 +47,14 @@ public class ConvertorDirector
             }
 
             // check or ignore invalid chars
-            switch (_byteValidator.ValidateByte(byteValue))
+            var byteValidationResult = _byteValidator.ValidateByte(byteValue);
+            if (byteValidationResult == ByteValidation.Ignore)
             {
-                case ByteValidation.Ignore:
-                    continue;
-                case ByteValidation.Error:
-                    throw new InvalidFormatCharacterException(byteValue);
+                continue;
+            }
+            if (byteValidationResult == ByteValidation.Error)
+            {
+                throw new InvalidFormatCharacterException(byteValue);
             }
 
             // convert

@@ -89,7 +89,7 @@ public class ArgumentParser
 
     private bool TryAddArgument(ArgumentType argumentType, string value)
     {
-        if (!_arguments.TryAdd(argumentType, new List<string>() { value }))
+        if (!_arguments.TryAdd(argumentType, new List<string> { value }))
         {
             if (argumentType == ArgumentType.ToOptions || argumentType == ArgumentType.FromOptions)
             {
