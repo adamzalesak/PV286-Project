@@ -30,9 +30,23 @@ public record ParserResult(bool Success, string ErrorMessage = "")
 
     public (string Input, string Output) GetInputOutput()
     {
-        Arguments.TryGetValue(ArgumentType.Input, out var input);
-        Arguments.TryGetValue(ArgumentType.Output, out var output);
-        return (input?.FirstOrDefault() ?? Constants.Stdin, output?.FirstOrDefault() ?? Constants.Stdout);
+        Arguments.TryGetValue(ArgumentType.Input, out var inputArgs);
+        Arguments.TryGetValue(ArgumentType.Output, out var outputArgs);
+
+        var input = inputArgs?.FirstOrDefault();
+        var output = outputArgs?.FirstOrDefault();
+
+        if (input is null or "")
+        {
+            input = Constants.Stdin;
+        }
+
+        if (output is null or "")
+        {
+            output = Constants.Stdout;
+        }
+
+        return (input, output);
     }
 
     public string GetDelimiter()

@@ -1,7 +1,7 @@
 ﻿using Panbyte.App.Parser;
 using Xunit;
 
-namespace Panbyte.Tests.UnitTests;
+namespace Panbyte.Tests.UnitTests.ParserTests;
 
 public class ArgumentParserTests
 {
@@ -43,7 +43,7 @@ public class ArgumentParserTests
     [InlineData("--from=int", "--to=")]
     [InlineData("-f", "bits", "-t", "bytes", "-i")]
     [InlineData("-f", "bits", "-o", "-t", "bytes")]
-    [InlineData("-f", "bits", "-t", "bytes", "--delimeter=")]
+    [InlineData("-f", "bits", "-t", "bytes", "--delimiter=")]
     public void Parse_WhenMissingArguments_ReturnsFalse(params string[] args)
     {
         var parserResult = new ArgumentParser(args).Parse();
@@ -62,7 +62,7 @@ public class ArgumentParserTests
     [InlineData("-f", "bits", "-t", "int", "-to-options=big")]
     [InlineData("-f", "int", "-t", "int", "-output=x")]
     [InlineData("-f", "hex", "-t", "array", "-input=x")]
-    [InlineData("-f", "hex", "-t", "bytes", "-delimeter=a")]
+    [InlineData("-f", "hex", "-t", "bytes", "-delimiter=a")]
     public void Parse_WhenInvalidArguments_ReturnsFalse(params string[] args)
     {
         var parserResult = new ArgumentParser(args).Parse();

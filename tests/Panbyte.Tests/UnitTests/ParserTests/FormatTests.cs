@@ -1,7 +1,7 @@
 using Panbyte.App.Parser;
 using Xunit;
 
-namespace Panbyte.Tests.UnitTests.Parser;
+namespace Panbyte.Tests.UnitTests.ParserTests;
 
 public class FormatTests
 {

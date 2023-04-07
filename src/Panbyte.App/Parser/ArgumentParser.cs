@@ -4,27 +4,28 @@ namespace Panbyte.App.Parser;
 
 public class ArgumentParser
 {
-    private readonly static Dictionary<string, ArgumentType> ArgumentAliases = new()
+    private static readonly Dictionary<string, ArgumentType> ArgumentAliases = new()
     {
-        { "-t", ArgumentType.To},
-        { "-f", ArgumentType.From},
-        { "-i", ArgumentType.Input},
-        { "-o", ArgumentType.Output},
-        { "-d", ArgumentType.Delimiter},
-    };
-    private readonly static Dictionary<string, ArgumentType> ArgumentNames = new()
-    {
-        { "to", ArgumentType.To},
-        { "from", ArgumentType.From},
-        { "to-options", ArgumentType.ToOptions},
-        { "from-options", ArgumentType.FromOptions},
-        { "input", ArgumentType.Input},
-        { "output", ArgumentType.Output},
-        { "delimiter", ArgumentType.Delimiter},
+        { "-t", ArgumentType.To },
+        { "-f", ArgumentType.From },
+        { "-i", ArgumentType.Input },
+        { "-o", ArgumentType.Output },
+        { "-d", ArgumentType.Delimiter },
     };
 
-    private static readonly Regex longArgumentRegex = new(
-        @"^--(?<name>input|output|from|from-options|to|to-options|delimiter)=(?<value>.*)$",
+    private static readonly Dictionary<string, ArgumentType> ArgumentNames = new()
+    {
+        { "to", ArgumentType.To },
+        { "from", ArgumentType.From },
+        { "to-options", ArgumentType.ToOptions },
+        { "from-options", ArgumentType.FromOptions },
+        { "input", ArgumentType.Input },
+        { "output", ArgumentType.Output },
+        { "delimiter", ArgumentType.Delimiter },
+    };
+
+    private static readonly Regex LongArgumentRegex = new(
+        @"^--(?<name>input|output|from|from-options|to|to-options|delimiter)=(?<value>.+)$",
         RegexOptions.Compiled,
         TimeSpan.FromMilliseconds(250));
 
@@ -53,11 +54,11 @@ public class ArgumentParser
                 }
                 if (!type.IsArgumentValueValid(argValue))
                 {
-                    return new($"Argument {arg} can not have this value '{argValue}'");
+                    return new($"Argument {arg} cannot have this value '{argValue}'");
                 }
                 if (!TryAddArgument(type, argValue))
                 {
-                    return new($"Duplicite argument: '{arg}'");
+                    return new($"Duplicate argument: '{arg}'");
                 }
                 continue;
             }
@@ -71,11 +72,11 @@ public class ArgumentParser
             }
             if (!type.IsArgumentValueValid(argumentValue))
             {
-                return new($"Argument {arg} can not have this value '{argumentValue}'");
+                return new($"Argument {arg} cannot have this value '{argumentValue}'");
             }
             if (!TryAddArgument(type, argumentValue))
             {
-                return new($"Duplicite argument: '{arg}'");
+                return new($"Duplicate argument: '{arg}'");
             }
         }
 
@@ -107,8 +108,8 @@ public class ArgumentParser
         argumentValue = string.Empty;
         try
         {
-            var match = longArgumentRegex.Match(arg);
-            if (match is null || !match.Success)
+            var match = LongArgumentRegex.Match(arg);
+            if (!match.Success)
             {
                 return false;
             }
