@@ -41,12 +41,7 @@ public class ArrayToArrayConvertor : IConvertor
         List<byte> bytesToProcess = new();
         State state = State.Start;
 
-        if (source[0] != '"' || source[^1] != '"' || !rightBrackets.Contains(source[^2]))
-        {
-            throw new InvalidFormatException("Array does not begin or end with quotes");
-        }
-
-        for (int i = 1; i < source.Length - 1; i++)
+        for (int i = 0; i < source.Length; i++)
         {
             switch (state)
             {
