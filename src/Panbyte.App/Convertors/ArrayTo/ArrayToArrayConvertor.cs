@@ -40,6 +40,11 @@ public class ArrayToArrayConvertor : IConvertor
         Stack<byte> brackets = new();
         List<byte> bytesToProcess = new();
         State state = State.Start;
+        
+        if (!leftBrackets.Contains(source[0]) || !rightBrackets.Contains(source[^1]))
+        {
+            throw new InvalidFormatException("Array does not begin or end with bracket.");
+        }
 
         for (int i = 0; i < source.Length; i++)
         {
