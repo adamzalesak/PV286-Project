@@ -40,13 +40,13 @@ public class ArrayToArrayConvertor : IConvertor
         Stack<byte> brackets = new();
         List<byte> bytesToProcess = new();
         State state = State.Start;
-
-        if (source[0] != '"' || source[^1] != '"' || !rightBrackets.Contains(source[^2]))
+        
+        if (!leftBrackets.Contains(source[0]) || !rightBrackets.Contains(source[^1]))
         {
-            throw new InvalidFormatException("Array does not begin or end with quotes");
+            throw new InvalidFormatException("Array does not begin or end with bracket.");
         }
 
-        for (int i = 1; i < source.Length - 1; i++)
+        for (int i = 0; i < source.Length; i++)
         {
             switch (state)
             {

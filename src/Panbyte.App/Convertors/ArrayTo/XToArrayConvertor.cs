@@ -4,8 +4,8 @@ namespace Panbyte.App.Convertors.ArrayTo;
 
 public class XToArrayConvertor : IConvertor
 {
-    private static readonly byte[] arrayPrefix = "\"{"u8.ToArray();
-    private static readonly byte[] arraySuffix = "}\""u8.ToArray();
+    private static readonly byte[] arrayPrefix = "{"u8.ToArray();
+    private static readonly byte[] arraySuffix = "}"u8.ToArray();
     private readonly ToArrayConvertorOptions options;
 
     public XToArrayConvertor(ToArrayConvertorOptions options)
