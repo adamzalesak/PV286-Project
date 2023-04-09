@@ -65,22 +65,29 @@ public class ConvertorDirector
             }
         }
 
+        // handle last bytes and new line
         if (readByte == -1 && bytes.Count != 0)
         {
-            ConvertInternal(bytes, destination);
+            var last2Bytes = bytes.TakeLast(2).ToArray();
+            var (bytesToConvert, addLine) = last2Bytes switch
+            {
+                [13, 10] => (bytes.SkipLast(2).ToArray(), true),
+                [_, 10] => (bytes.SkipLast(1).ToArray(), true),
+                _ => (bytes.ToArray(), false)
+            };
+            _convertor.ConvertPart(bytesToConvert, destination);
+            bytes.Clear();
+
+            if (addLine)
+            {
+                destination.Write(Encoding.ASCII.GetBytes(Environment.NewLine));
+            }
         }
     }
 
     private void ConvertInternal(IList<byte> bytes, Stream destination)
     {
-        var last2Bytes = bytes.TakeLast(2).ToArray();
-        var bytesToConvert = last2Bytes switch
-        {
-            [13, 10] => bytes.SkipLast(2).ToArray(),
-            [_, 10] => bytes.SkipLast(1).ToArray(),
-            _ => bytes.ToArray()
-        };
-        _convertor.ConvertPart(bytesToConvert, destination);
+        _convertor.ConvertPart(bytes.ToArray(), destination);
         bytes.Clear();
     }
 

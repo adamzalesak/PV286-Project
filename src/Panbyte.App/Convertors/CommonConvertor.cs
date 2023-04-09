@@ -14,9 +14,7 @@ public class CommonConvertor : IConvertor
     public void ConvertPart(byte[] source, Stream destination)
     {
         using var tmpStream = new MemoryStream();
-        inputConvertor.ConvertPart(GetBytes(source), tmpStream);
+        inputConvertor.ConvertPart(source, tmpStream);
         outputConvertor.ConvertPart(tmpStream.ToArray(), destination);
     }
-
-    protected virtual byte[] GetBytes(byte[] source) => source;
 }

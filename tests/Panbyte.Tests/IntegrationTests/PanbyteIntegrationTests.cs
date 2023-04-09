@@ -53,6 +53,13 @@ public class PanbyteIntegrationTests
     [InlineData("-f array -t array --to-options=0 --to-options=[", "{{0x01, (2), [3, 0b100, 0x05], '\\x06'}}", "[[1, [2], [3, 4, 5], 6]]", 0)]
     [InlineData("-f array -t array", "()", "{}", 0)]
     [InlineData("-f array -t array --to-options=\"[\"", "([],{})", "[[], []]", 0)]
+    [InlineData("-f array -t array --to-options=\"(\" --to-options=\"[\" --to-options=\"0x\" --to-options=0", "[1,2,{3}]", "[1, 2, [3]]", 0)]
+    [InlineData("-f int -t array --to-options=\"(\" --to-options=\"[\" --to-options=\"0x\"", "123", "[0x7B]", 0)]
+    [InlineData("-f bits -d a -t array --to-options=\"]\" --to-options=\")\" --to-options=\"0x\"", "1101a1100", "(0xd)a(0xc)", 0)]
+    [InlineData("-f array -t bits", "[0x0D]", "00001101", 0)]
+    [InlineData("-f bytes -t array", "test", "{0x74, 0x65, 0x73, 0x74}", 0)]
+    [InlineData("-f array -t bytes", "{0x74, 0x65, 0x73, 0x74}", "test", 0)]
+
     public async Task TestsWithPipes(string arguments, string input, string output, int errCode)
     {
         using var outputStream = new MemoryStream();

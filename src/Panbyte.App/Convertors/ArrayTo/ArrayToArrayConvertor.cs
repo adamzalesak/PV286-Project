@@ -22,7 +22,7 @@ public class ArrayToArrayConvertor : IConvertor
     public ArrayToArrayConvertor(ArrayConvertorOptions convertorOptions)
     {
         this.convertorOptions = convertorOptions;
-        (outputLeftBracket, outputRightBracket) = SelectBracket(convertorOptions.OutputOptions.Where(i => !i.StartsWith('0') || !i.StartsWith('a')).LastOrDefault(""));
+        (outputLeftBracket, outputRightBracket) = SelectBracket(convertorOptions.OutputOptions.Where(i => !i.StartsWith('0') && !i.StartsWith('a')).LastOrDefault(""));
         arrayFormat = convertorOptions.OutputOptions.Where(i => i.StartsWith('0') || i.StartsWith('a')).LastOrDefault("0x");
         toFormat = arrayFormat switch
         {
@@ -40,7 +40,7 @@ public class ArrayToArrayConvertor : IConvertor
         Stack<byte> brackets = new();
         List<byte> bytesToProcess = new();
         State state = State.Start;
-        
+
         if (!leftBrackets.Contains(source[0]) || !rightBrackets.Contains(source[^1]))
         {
             throw new InvalidFormatException("Array does not begin or end with bracket.");
@@ -207,6 +207,7 @@ public class ArrayToArrayConvertor : IConvertor
             [48, 120, (>= 48 and <= 57) or (>= 65 and <= 90) or (>= 97 and <= 122), (>= 48 and <= 57) or (>= 65 and <= 90) or (>= 97 and <= 122)] => (Format.Hex, bytes[2..]),
             [39, 92, 120, (>= 48 and <= 57) or (>= 65 and <= 90) or (>= 97 and <= 122), (>= 48 and <= 57) or (>= 65 and <= 90) or (>= 97 and <= 122), 39] => (Format.Hex, bytes[3..^1]),
             [39, _, 39] => (Format.Bytes, bytes[1..2]),
+            [39, 39] => (Format.Bytes, Array.Empty<byte>()),
             [>= 48 and <= 57, ..] => (Format.Int, bytes),
             _ => throw new InvalidFormatException()
         };
