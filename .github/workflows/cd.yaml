@@ -1,0 +1,62 @@
+name: cd
+
+on:
+  push:
+    branches: [ "main"]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: adamzalesak/PV286-Project/.github/workflows/ci.yaml@main
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Setup GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+            versionSpec: '5.x'
+    
+      - name: Checkout before determinig new version
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      
+      - name: Determine version with GitVersion
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.7
+        with:
+          useConfigFile: true
+      
+      - name: Publish Windows app
+        run: dotnet publish src/Panbyte.App/Panbyte.App.csproj -c Release --sc true --version-suffix ${{ steps.gitversion.outputs.majorMinorPatch }} -r win-x64 /p:PublishSingleFile=true /p:UseAppHost=true /p:DebugType=None /p:DebugSymbols=false -p:PublishDir=out
+      
+      - name: Publish Linux app
+        run: dotnet publish src/Panbyte.App/Panbyte.App.csproj -c Release --sc true --version-suffix ${{ steps.gitversion.outputs.majorMinorPatch }} -r linux-x64 /p:PublishSingleFile=true /p:UseAppHost=true /p:DebugType=None /p:DebugSymbols=false -p:PublishDir=out
+
+      - name: Generate NuGet package
+        run: dotnet pack -c Release -o out /p:ContinuousIntegrationBuild=true --include-source /p:Version=${{ steps.gitversion.outputs.majorMinorPatch }}
+      
+      - name: Nuget setup
+        uses: actions/setup-dotnet@v1
+        with:
+          source-url: https://nuget.pkg.github.com/adamzalesak/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          
+      - name: Push generated packages to GitHub registry
+        run: dotnet nuget push "out/*.nupkg" --api-key ${{secrets.pat}} --skip-duplicate --source "github"
+
+      - name: Create release, upload artifacts
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "out/*.nupkg, ${{ github.workspace }}/src/Panbyte.App/out/*"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.gitversion.outputs.majorMinorPatch }}
+    
+
