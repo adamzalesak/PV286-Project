@@ -89,11 +89,6 @@ public class ArrayToArrayConvertor : IConvertor
                     }
                     throw new InvalidFormatException();
                 case State.FormattedInput:
-                    if (bytesToProcess.Count > 10)
-                    {
-                        // everything else is surely an error
-                        throw new InvalidFormatException();
-                    }
                     if (source[i] == ',')
                     {
                         if (bytesToProcess.Any())
